@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>観劇手帖 元レイアウト赤系 | レビュー投稿</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
+      <span class="brand-mark">観</span>
+      <span>観劇手帖</span>
+    </a>
+    <nav class="nav" aria-label="主要メニュー">
+      <a href="index.html">公演検索</a>
+      <a href="reviews.html">座席レビュー</a>
+      <a class="active" href="post.html">レビュー投稿</a>
+      <a href="contact.html">お問い合わせ</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Post Review</span>
+      <h1>レビュー投稿</h1>
+      <p class="hero-copy">座席の見え方や音の聞こえ方を、これから観劇する人のために残せます。</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="section" aria-labelledby="postTitle">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-title">
+            <span>Review Form</span>
+            <h2 id="postTitle">座席レビューを投稿</h2>
+            <p>階・列・番は劇場ごとに変わる選択式です。投稿前にレビュー投稿ルールをご確認ください。</p>
+          </div>
+        </div>
+
+        <form class="form-card stack" id="reviewForm">
+          <div class="form-notice">
+            <strong>投稿前のお願い</strong>
+            <p>座席からの見え方や音の聞こえ方など、これから観劇する人の参考になる内容を投稿してください。出演者・スタッフ・他の観客への誹謗中傷や、個人を特定できる内容は掲載できません。</p>
+            <a class="theater-link" href="rules.html">レビュー投稿ルールを見る</a>
+          </div>
+          <div class="three-col">
+            <label>
+              地域
+              <select id="postTheaterArea" required></select>
+            </label>
+            <label>
+              劇場名
+              <select id="postTheater" required></select>
+            </label>
+            <label>
+              観劇作品
+              <input id="postShow" required placeholder="例: レ・ミゼラブル">
+            </label>
+          </div>
+          <div class="three-col">
+            <label>
+              階
+              <select id="postFloor"></select>
+            </label>
+            <label>
+              列
+              <select id="postRow"></select>
+            </label>
+            <label>
+              番
+              <select id="postSeat"></select>
+            </label>
+          </div>
+          <div class="three-col">
+            <label>
+              見え方評価
+              <select id="postVisibility">
+                <option value="5">★★★★★</option>
+                <option value="4">★★★★</option>
+                <option value="3">★★★</option>
+                <option value="2">★★</option>
+                <option value="1">★</option>
+              </select>
+            </label>
+            <label>
+              音響評価
+              <select id="postSound">
+                <option value="5">★★★★★</option>
+                <option value="4">★★★★</option>
+                <option value="3">★★★</option>
+                <option value="2">★★</option>
+                <option value="1">★</option>
+              </select>
+            </label>
+            <label>
+              おすすめ度
+              <select id="postRecommendation">
+                <option value="5">★★★★★</option>
+                <option value="4">★★★★</option>
+                <option value="3">★★★</option>
+                <option value="2">★★</option>
+                <option value="1">★</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            性別
+            <select id="postGender">
+              <option>女性</option>
+              <option>男性</option>
+              <option>その他</option>
+              <option>回答しない</option>
+            </select>
+          </label>
+          <label>
+            コメント
+            <textarea id="postComment" placeholder="見え方や音の聞こえ方、前の人の影響など"></textarea>
+          </label>
+          <p class="form-help" id="commentRule"></p>
+          <p class="form-help">投稿は原則すぐに公開されます。不適切と判断した投稿は、管理者側で後から非公開にする場合があります。</p>
+          <button class="btn gold" type="submit">レビューを投稿する</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <span>© 2026 観劇手帖 元レイアウト赤系試作. このページはデザイン確認用です。</span>
+      <span class="footer-links"><a href="privacy.html">プライバシーポリシー</a><a href="rules.html">レビュー投稿ルール</a></span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

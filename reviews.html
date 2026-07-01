@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>観劇手帖 元レイアウト赤系 | 座席レビュー</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
+      <span class="brand-mark">観</span>
+      <span>観劇手帖</span>
+    </a>
+    <nav class="nav" aria-label="主要メニュー">
+      <a href="index.html">公演検索</a>
+      <a class="active" href="reviews.html">座席レビュー</a>
+      <a href="post.html">レビュー投稿</a>
+      <a href="contact.html">お問い合わせ</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Seat Reviews</span>
+      <h1>座席レビュー</h1>
+      <p class="hero-copy">劇場を選んで、座席ごとの見え方や音響レビューを確認できます。</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="section navy" aria-labelledby="reviewsTitle">
+      <div class="container layout">
+        <div>
+          <div class="section-head">
+            <div class="section-title">
+              <span>Theaters</span>
+              <h2 id="reviewsTitle">劇場一覧</h2>
+              <p>劇場数が増えても探しやすいよう、一覧ページと劇場詳細ページを分けています。</p>
+            </div>
+          </div>
+
+          <form class="theater-filter" id="theaterAreaFilter">
+            <label>
+              地域
+              <select id="theaterAreaInput">
+                <option>全国</option>
+                <option>東京</option>
+                <option>大阪</option>
+                <option>名古屋</option>
+                <option>福岡</option>
+                <option>北海道</option>
+                <option>東北</option>
+                <option>関東</option>
+                <option>中部</option>
+                <option>関西</option>
+                <option>中国</option>
+                <option>四国</option>
+                <option>九州</option>
+              </select>
+            </label>
+            <button class="btn gold" type="submit">劇場を探す</button>
+          </form>
+
+          <div class="theater-list" id="theaterList"></div>
+        </div>
+
+        <aside class="sidebar" aria-label="広告枠">
+          <div class="ad-box">PCサイドバー広告枠<br>Google AdSense想定</div>
+          <div class="note">将来はここに劇場エリアやレビュー数での絞り込みを追加できます。</div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <span>© 2026 観劇手帖 元レイアウト赤系試作. このページはデザイン確認用です。</span>
+      <span class="footer-links"><a href="privacy.html">プライバシーポリシー</a><a href="rules.html">レビュー投稿ルール</a></span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

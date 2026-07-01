@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>観劇手帖 元レイアウト赤系 | 劇場詳細</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
+      <span class="brand-mark">観</span>
+      <span>観劇手帖</span>
+    </a>
+    <nav class="nav" aria-label="主要メニュー">
+      <a href="index.html">公演検索</a>
+      <a class="active" href="reviews.html">座席レビュー</a>
+      <a href="post.html">レビュー投稿</a>
+      <a href="contact.html">お問い合わせ</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Theater Detail</span>
+      <h1 id="theaterHeroName">劇場詳細</h1>
+      <p class="hero-copy">劇場情報、平均評価、座席検索、個別レビューをまとめて確認できます。</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="section navy" aria-labelledby="detailName">
+      <div class="container layout">
+        <div>
+          <p style="margin-top: 0;"><a class="btn subtle back-link" href="reviews.html">劇場一覧へ戻る</a></p>
+
+          <article class="detail-panel" id="theaterDetail">
+            <div class="detail-grid">
+              <div>
+                <span class="card-kicker">劇場詳細</span>
+                <h2 id="detailName" style="margin-top: 10px; color: var(--navy); font-size: 1.8rem;"></h2>
+                <dl class="info-list">
+                  <dt>住所</dt>
+                  <dd id="detailAddress"></dd>
+                  <dt>アクセス</dt>
+                  <dd id="detailAccess"></dd>
+                  <dt>座席数</dt>
+                  <dd id="detailCapacity"></dd>
+                  <dt>公式サイト</dt>
+                  <dd><a class="theater-link" id="detailOfficialUrl" href="#" target="_blank" rel="noopener noreferrer">公式サイトを見る</a></dd>
+                  <dt>座席表</dt>
+                  <dd><a class="theater-link" id="detailSeatMapUrl" href="#" target="_blank" rel="noopener noreferrer">公式サイトで座席表を見る</a></dd>
+                </dl>
+              </div>
+            </div>
+
+            <form class="search-small" id="seatSearch">
+              <label>
+                階
+                <select id="floorInput"></select>
+              </label>
+              <label>
+                列
+                <select id="rowInput"></select>
+              </label>
+              <label>
+                番
+                <select id="seatInput"></select>
+              </label>
+              <button class="btn" type="submit">座席検索</button>
+            </form>
+
+            <div class="stats" id="stats"></div>
+
+            <div class="results-meta" id="reviewMeta"></div>
+            <div class="reviews" id="reviewList"></div>
+          </article>
+        </div>
+
+        <aside class="sidebar" aria-label="広告枠">
+          <div class="ad-box">PCサイドバー広告枠<br>Google AdSense想定</div>
+          <div class="note">劇場詳細ページは「シアタークリエ 座席 見え方」のような検索にも強くしやすい構成です。</div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <span>© 2026 観劇手帖 元レイアウト赤系試作. このページはデザイン確認用です。</span>
+      <span class="footer-links"><a href="privacy.html">プライバシーポリシー</a><a href="rules.html">レビュー投稿ルール</a></span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/app.js"></script>
+</body>
+</html>
