@@ -290,6 +290,10 @@
       align-items: end;
     }
 
+    .form-grid label {
+      min-width: 0;
+    }
+
     .compare-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -344,6 +348,7 @@
     select,
     textarea {
       width: 100%;
+      min-width: 0;
       min-height: 46px;
       padding: 10px 12px;
       color: var(--ink);
@@ -351,6 +356,12 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       outline: none;
+    }
+
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      max-width: 100%;
     }
 
     textarea {
@@ -1105,6 +1116,16 @@
 
       .sidebar {
         position: static;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .hero .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero .form-grid .btn {
+        width: 100%;
       }
     }
 

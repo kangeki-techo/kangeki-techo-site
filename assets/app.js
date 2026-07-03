@@ -48,6 +48,7 @@ const dataCacheKey = "kangekiTechoDataCache";
 let reviews = [...baseReviews, ...loadSavedReviews()];
 let selectedTheater = getQuery("theater") || theaters[0]?.name || "";
 let seatFilter = { floor: "", row: "", seat: "" };
+let dataReady = false;
 
 function loadRemoteData() {
   if (!API_URL) return Promise.resolve(false);
@@ -105,6 +106,7 @@ function saveDataCache(data) {
 
 function applyRemoteData(data) {
   if (!data) return;
+  dataReady = true;
 
   performances = (data.performances || []).map((item) => ({
     id: getField(item, ["id", "ID"]),
@@ -583,6 +585,12 @@ function renderPerformances() {
   performanceMeta.textContent = `${date || "日付指定なし"} / ${area}：${filtered.length}件の公演`;
   performanceResults.innerHTML = "";
 
+  if (!dataReady) {
+    performanceMeta.textContent = "公演情報を読み込んでいます";
+    performanceResults.innerHTML = `<div class="empty wide">公演情報を読み込んでいます。少しだけお待ちください。</div>`;
+    return;
+  }
+
   if (!filtered.length) {
     performanceResults.innerHTML = `<div class="empty wide">条件に合う公演がありません。日付や地域を変えて試してください。</div>`;
     return;
@@ -982,10 +990,18 @@ function renderAll() {
 renderAll();
 bindEvents();
 
+const hasCachedData = loadDataCache();
+if (hasCachedData) {
+  renderAll();
+}
+
 loadRemoteData().then((loaded) => {
   if (loaded) {
     renderAll();
+  } else if (hasCachedData) {
+    showToast("最新データの読み込みに時間がかかっています。前回のデータを表示しています。");
   } else {
+    renderAll();
     showToast("データの読み込みに時間がかかっています。時間をおいて再読み込みしてください。");
   }
 });
