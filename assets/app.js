@@ -1131,6 +1131,6 @@ loadRemoteData().then((loaded) => {
   if (loaded) {
     renderAll();
   } else if (!hasCachedData) {
-    showToast("スプレッドシートの読み込みに時間がかかっています。デモデータを表示します。");
+    showToast("データの読み込みに時間がかかっています。時間をおいて再読み込みしてください。");
   }
 });
