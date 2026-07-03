@@ -1,105 +1,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzOWOuuQzDxR9cP3GeUeEDOlYJ120LXwmQvSkN1fVp7L8OPEFUIzAcngVL5zVNfhZf0Tw/exec";
 
-let performances = [
-  {
-    id: 1,
-    date: "2026-07-12",
-    area: "東京",
-    tags: ["ミュージカル", "初日"],
-    title: "レ・ミゼラブル",
-    time: "13:00",
-    theater: "シアタークリエ",
-    officialUrl: "#",
-    ticketUrl: "#"
-  },
-  {
-    id: 2,
-    date: "2026-07-12",
-    area: "東京",
-    tags: ["ミュージカル", "貸切"],
-    title: "エリザベート",
-    time: "18:00",
-    theater: "日生劇場",
-    officialUrl: "#",
-    ticketUrl: "#"
-  },
-  {
-    id: 3,
-    date: "2026-07-12",
-    area: "大阪",
-    tags: ["ミュージカル"],
-    title: "ウィキッド",
-    time: "12:30",
-    theater: "大阪四季劇場",
-    officialUrl: "#",
-    ticketUrl: "#"
-  },
-  {
-    id: 4,
-    date: "2026-07-13",
-    area: "福岡",
-    tags: ["ミュージカル", "千秋楽"],
-    title: "ミス・サイゴン",
-    time: "17:30",
-    theater: "博多座",
-    officialUrl: "#",
-    ticketUrl: "#"
-  },
-  {
-    id: 5,
-    date: "2026-07-12",
-    area: "東京",
-    tags: ["演劇"],
-    title: "ハムレット",
-    time: "15:00",
-    theater: "PARCO劇場",
-    officialUrl: "#",
-    ticketUrl: "#"
-  }
-];
-
-let theaters = [
-  {
-    name: "シアタークリエ",
-    area: "東京",
-    address: "東京都千代田区有楽町一丁目",
-    access: "日比谷駅・有楽町駅から徒歩圏内",
-    capacity: "約600席",
-    officialUrl: "https://www.tohostage.com/theatre_crea/"
-  },
-  {
-    name: "日生劇場",
-    area: "東京",
-    address: "東京都千代田区有楽町一丁目",
-    access: "日比谷駅から徒歩すぐ",
-    capacity: "約1,300席",
-    officialUrl: "https://www.nissaytheatre.or.jp/"
-  },
-  {
-    name: "大阪四季劇場",
-    area: "大阪",
-    address: "大阪府大阪市北区梅田",
-    access: "大阪駅・梅田駅から徒歩圏内",
-    capacity: "約1,100席",
-    officialUrl: "https://www.shiki.jp/theatres/osaka/"
-  },
-  {
-    name: "博多座",
-    area: "福岡",
-    address: "福岡県福岡市博多区下川端町",
-    access: "中洲川端駅直結",
-    capacity: "約1,450席",
-    officialUrl: "https://www.hakataza.co.jp/"
-  },
-  {
-    name: "PARCO劇場",
-    area: "東京",
-    address: "東京都渋谷区宇田川町",
-    access: "渋谷駅から徒歩圏内",
-    capacity: "約630席",
-    officialUrl: "https://stage.parco.jp/parcotheater/"
-  }
-];
+let performances = [];
+let theaters = [];
 
 function numberedOptions(count, suffix, start = 1) {
   return Array.from({ length: count }, (_, index) => `${index + start}${suffix}`);
@@ -139,78 +41,12 @@ let theaterSeatOptions = {
   }
 };
 
-const baseReviews = [
-  {
-    theater: "シアタークリエ",
-    showTitle: "レ・ミゼラブル",
-    height: "160cm",
-    floor: "1階",
-    row: "15列",
-    seat: "22番",
-    visibility: 5,
-    sound: 5,
-    recommendation: 5,
-    comment: "舞台全体と表情の両方が見やすく、音の迫力も十分でした。",
-    createdAt: "2026-06-20"
-  },
-  {
-    theater: "シアタークリエ",
-    showTitle: "エリザベート",
-    height: "155cm",
-    floor: "2階",
-    row: "3列",
-    seat: "14番",
-    visibility: 4,
-    sound: 5,
-    recommendation: 4,
-    comment: "少し距離はありますが、フォーメーションがきれいに見えました。",
-    createdAt: "2026-06-17"
-  },
-  {
-    theater: "日生劇場",
-    showTitle: "ラグタイム",
-    height: "158cm",
-    floor: "1階",
-    row: "8列",
-    seat: "31番",
-    visibility: 4,
-    sound: 4,
-    recommendation: 4,
-    comment: "端寄りですが、演者の出入りが近く臨場感がありました。",
-    createdAt: "2026-06-15"
-  },
-  {
-    theater: "大阪四季劇場",
-    showTitle: "ウィキッド",
-    height: "170cm",
-    floor: "1階",
-    row: "10列",
-    seat: "18番",
-    visibility: 5,
-    sound: 4,
-    recommendation: 5,
-    comment: "センター寄りで見やすく、初見にもおすすめしやすい席です。",
-    createdAt: "2026-06-12"
-  },
-  {
-    theater: "博多座",
-    showTitle: "ミス・サイゴン",
-    height: "162cm",
-    floor: "3階",
-    row: "1列",
-    seat: "6番",
-    visibility: 3,
-    sound: 4,
-    recommendation: 3,
-    comment: "上から全体を見渡せます。細かい表情はオペラグラスがあると安心です。",
-    createdAt: "2026-06-09"
-  }
-];
+const baseReviews = [];
 
 const storageKey = "kangekiTechoReviews";
 const dataCacheKey = "kangekiTechoDataCache";
 let reviews = [...baseReviews, ...loadSavedReviews()];
-let selectedTheater = getQuery("theater") || theaters[0].name;
+let selectedTheater = getQuery("theater") || theaters[0]?.name || "";
 let seatFilter = { floor: "", row: "", seat: "" };
 
 function loadRemoteData() {
@@ -752,11 +588,7 @@ function renderPerformances() {
     return;
   }
 
-  filtered.forEach((item, index) => {
-    if (index === 2) {
-      performanceResults.insertAdjacentHTML("beforeend", `<div class="ad-box wide">検索結果内広告枠<br>Google AdSense想定</div>`);
-    }
-
+  filtered.forEach((item) => {
     performanceResults.insertAdjacentHTML("beforeend", `
       <article class="card performance-card">
         <div class="pill-row">
@@ -866,6 +698,34 @@ function renderDetail() {
   if (!detailName) return;
 
   const theater = theaters.find((item) => normalizeTheaterName(item.name) === normalizeTheaterName(selectedTheater)) || theaters[0];
+  if (!theater) {
+    detailName.textContent = "劇場情報を読み込めませんでした";
+    const heroName = document.querySelector("#theaterHeroName");
+    if (heroName) heroName.textContent = "劇場情報";
+    document.querySelector("#detailAddress").textContent = "-";
+    document.querySelector("#detailAccess").textContent = "-";
+    document.querySelector("#detailCapacity").textContent = "-";
+    const officialLink = document.querySelector("#detailOfficialUrl");
+    if (officialLink) {
+      officialLink.href = "#";
+      officialLink.textContent = "公式サイト未登録";
+      officialLink.removeAttribute("target");
+      officialLink.removeAttribute("rel");
+      officialLink.setAttribute("aria-disabled", "true");
+    }
+    const seatMapLink = document.querySelector("#detailSeatMapUrl");
+    if (seatMapLink) {
+      seatMapLink.href = "#";
+      seatMapLink.textContent = "座席表リンク未登録";
+      seatMapLink.removeAttribute("target");
+      seatMapLink.removeAttribute("rel");
+      seatMapLink.setAttribute("aria-disabled", "true");
+    }
+    document.querySelector("#stats").innerHTML = "";
+    document.querySelector("#reviewMeta").textContent = "";
+    document.querySelector("#reviewList").innerHTML = `<div class="empty">劇場情報を読み込めませんでした。時間をおいて再読み込みしてください。</div>`;
+    return;
+  }
   selectedTheater = theater.name;
   const visibleReviews = getVisibleReviews();
   setupDetailSeatSelects(theater.name);
@@ -923,11 +783,7 @@ function renderDetail() {
     return;
   }
 
-  visibleReviews.forEach((review, index) => {
-    if (index === 2) {
-      reviewList.insertAdjacentHTML("beforeend", `<div class="ad-box">レビュー一覧内広告枠<br>Google AdSense想定</div>`);
-    }
-
+  visibleReviews.forEach((review) => {
     reviewList.insertAdjacentHTML("beforeend", `
       <article class="review-item">
         <div class="review-head">
@@ -1123,14 +979,13 @@ function renderAll() {
   updateCommentRequirement();
 }
 
-const hasCachedData = loadDataCache();
 renderAll();
 bindEvents();
 
 loadRemoteData().then((loaded) => {
   if (loaded) {
     renderAll();
-  } else if (!hasCachedData) {
+  } else {
     showToast("データの読み込みに時間がかかっています。時間をおいて再読み込みしてください。");
   }
 });
