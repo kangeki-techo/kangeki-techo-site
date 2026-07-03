@@ -9,8 +9,16 @@
 <body>
   <header class="site-header">
     <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
-      <span class="brand-mark">観</span>
-      <span>観劇手帖</span>
+      <span class="notebook-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-roman">KANGEKI TECHO</span>
+        <span class="brand-title" aria-label="観劇手帖">
+          <span aria-hidden="true">観</span>
+          <span aria-hidden="true">劇</span>
+          <span aria-hidden="true">手</span>
+          <span aria-hidden="true">帖</span>
+        </span>
+      </span>
     </a>
     <nav class="nav" aria-label="主要メニュー">
       <a class="active" href="index.html">公演検索</a>
@@ -24,9 +32,12 @@
     <div class="hero-inner">
       <span class="eyebrow">Stage Schedule & Seat Reviews</span>
       <h1>観劇手帖</h1>
-      <p class="hero-copy">観たい日から舞台・ミュージカルを探し、劇場ごとの座席レビューまで確認できる、観劇好きのための小さな手帖です。</p>
+      <p class="hero-copy">観たい日から舞台・ミュージカルを探し、劇場ごとの座席レビューまで確認できる、<br>観劇好きのための小さな手帖です。</p>
 
       <form class="search-panel" id="performanceSearch">
+        <div class="search-panel-head">
+          <h2>公演検索</h2>
+        </div>
         <div class="form-grid">
           <label>
             日付
@@ -62,8 +73,8 @@
         <div class="section-head">
           <div class="section-title">
             <span>Search Result</span>
-            <h2 id="performancesTitle">公演カード</h2>
-            <p>公演は開演時間の早い順に表示します。劇場名を押すと、その劇場の座席レビューへ移動できます。</p>
+            <h2 id="performancesTitle">公演一覧</h2>
+            <p>公演は開演時間の早い順に表示します。<br>劇場名を押すと、その劇場の座席レビューへ移動できます。</p>
           </div>
         </div>
         <div class="results-meta" id="performanceMeta"></div>

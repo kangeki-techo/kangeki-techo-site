@@ -9,8 +9,16 @@
 <body>
   <header class="site-header">
     <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
-      <span class="brand-mark">観</span>
-      <span>観劇手帖</span>
+      <span class="notebook-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-roman">KANGEKI TECHO</span>
+        <span class="brand-title" aria-label="観劇手帖">
+          <span aria-hidden="true">観</span>
+          <span aria-hidden="true">劇</span>
+          <span aria-hidden="true">手</span>
+          <span aria-hidden="true">帖</span>
+        </span>
+      </span>
     </a>
     <nav class="nav" aria-label="主要メニュー">
       <a href="index.html">公演検索</a>
@@ -35,7 +43,7 @@
           <div class="section-title">
             <span>Review Form</span>
             <h2 id="postTitle">座席レビューを投稿</h2>
-            <p>階・列・番は劇場ごとに変わる選択式です。投稿前にレビュー投稿ルールをご確認ください。</p>
+            <p>階・列・番は劇場ごとに変わる選択式です。<br>投稿前にレビュー投稿ルールをご確認ください。</p>
           </div>
         </div>
 
@@ -45,7 +53,7 @@
             <p>座席からの見え方や音の聞こえ方など、これから観劇する人の参考になる内容を投稿してください。出演者・スタッフ・他の観客への誹謗中傷や、個人を特定できる内容は掲載できません。</p>
             <a class="theater-link" href="rules.html">レビュー投稿ルールを見る</a>
           </div>
-          <div class="three-col">
+          <div class="post-basic-grid">
             <label>
               地域
               <select id="postTheaterArea" required></select>
@@ -57,6 +65,10 @@
             <label>
               観劇作品
               <input id="postShow" required placeholder="例: レ・ミゼラブル">
+            </label>
+            <label>
+              身長（cm）
+              <input id="postHeight" type="number" min="100" max="220" inputmode="numeric" value="160" placeholder="例: 160">
             </label>
           </div>
           <div class="three-col">
@@ -105,15 +117,6 @@
               </select>
             </label>
           </div>
-          <label>
-            性別
-            <select id="postGender">
-              <option>女性</option>
-              <option>男性</option>
-              <option>その他</option>
-              <option>回答しない</option>
-            </select>
-          </label>
           <label>
             コメント
             <textarea id="postComment" placeholder="見え方や音の聞こえ方、前の人の影響など"></textarea>

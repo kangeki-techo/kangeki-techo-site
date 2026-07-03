@@ -9,8 +9,16 @@
 <body>
   <header class="site-header">
     <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
-      <span class="brand-mark">観</span>
-      <span>観劇手帖</span>
+      <span class="notebook-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-roman">KANGEKI TECHO</span>
+        <span class="brand-title" aria-label="観劇手帖">
+          <span aria-hidden="true">観</span>
+          <span aria-hidden="true">劇</span>
+          <span aria-hidden="true">手</span>
+          <span aria-hidden="true">帖</span>
+        </span>
+      </span>
     </a>
     <nav class="nav" aria-label="主要メニュー">
       <a href="index.html">公演検索</a>
@@ -38,7 +46,7 @@
             <div class="detail-grid">
               <div>
                 <span class="card-kicker">劇場詳細</span>
-                <h2 id="detailName" style="margin-top: 10px; color: var(--navy); font-size: 1.8rem;"></h2>
+                <h2 class="detail-title" id="detailName"></h2>
                 <dl class="info-list">
                   <dt>住所</dt>
                   <dd id="detailAddress"></dd>
@@ -74,6 +82,7 @@
 
             <div class="results-meta" id="reviewMeta"></div>
             <div class="reviews" id="reviewList"></div>
+            <p class="bottom-back-link"><a class="btn subtle back-link" href="reviews.html">劇場一覧へ戻る</a></p>
           </article>
         </div>
 

@@ -143,7 +143,7 @@ const baseReviews = [
   {
     theater: "シアタークリエ",
     showTitle: "レ・ミゼラブル",
-    gender: "女性",
+    height: "160cm",
     floor: "1階",
     row: "15列",
     seat: "22番",
@@ -156,7 +156,7 @@ const baseReviews = [
   {
     theater: "シアタークリエ",
     showTitle: "エリザベート",
-    gender: "回答しない",
+    height: "155cm",
     floor: "2階",
     row: "3列",
     seat: "14番",
@@ -169,7 +169,7 @@ const baseReviews = [
   {
     theater: "日生劇場",
     showTitle: "ラグタイム",
-    gender: "女性",
+    height: "158cm",
     floor: "1階",
     row: "8列",
     seat: "31番",
@@ -182,7 +182,7 @@ const baseReviews = [
   {
     theater: "大阪四季劇場",
     showTitle: "ウィキッド",
-    gender: "男性",
+    height: "170cm",
     floor: "1階",
     row: "10列",
     seat: "18番",
@@ -195,7 +195,7 @@ const baseReviews = [
   {
     theater: "博多座",
     showTitle: "ミス・サイゴン",
-    gender: "その他",
+    height: "162cm",
     floor: "3階",
     row: "1列",
     seat: "6番",
@@ -298,6 +298,7 @@ function applyRemoteData(data) {
     createdAt: getField(item, ["created_at", "投稿日", "作成日"]),
     theater: getField(item, ["theater", "劇場名", "劇場"]),
     showTitle: getField(item, ["show_title", "観劇作品", "作品名"]),
+    height: formatHeight(getField(item, ["height", "身長"])),
     gender: getField(item, ["gender", "性別"]),
     floor: getField(item, ["floor", "階"]),
     row: getField(item, ["row", "列"]),
@@ -330,6 +331,25 @@ function getField(item, keys, fallback = "") {
     }
   }
   return fallback;
+}
+
+function formatHeight(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const number = text.replace(/[^\d.]/g, "");
+  if (!number) return text;
+  return `${number}cm`;
+}
+
+function isHeightValue(value) {
+  return /^\d{2,3}(\.\d)?\s*(cm)?$/i.test(String(value || "").trim());
+}
+
+function reviewPersonMeta(review) {
+  if (review.height) return `身長：${formatHeight(review.height)}`;
+  if (isHeightValue(review.gender)) return `身長：${formatHeight(review.gender)}`;
+  if (review.gender) return `性別：${review.gender}`;
+  return "身長：未入力";
 }
 
 function normalizeArea(value) {
@@ -536,6 +556,34 @@ function showToast(message) {
   window.setTimeout(() => toast.classList.remove("show"), 2600);
 }
 
+function setupMobileMenu() {
+  const header = document.querySelector(".site-header");
+  const nav = document.querySelector(".nav");
+  if (!header || !nav || header.querySelector(".menu-toggle")) return;
+
+  const button = document.createElement("button");
+  button.className = "menu-toggle";
+  button.type = "button";
+  button.setAttribute("aria-controls", "siteNav");
+  button.setAttribute("aria-expanded", "false");
+  button.innerHTML = '<span class="menu-toggle-lines" aria-hidden="true"></span><span>メニュー</span>';
+
+  nav.id = nav.id || "siteNav";
+  header.insertBefore(button, nav);
+
+  button.addEventListener("click", () => {
+    const isOpen = header.classList.toggle("menu-open");
+    button.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      header.classList.remove("menu-open");
+      button.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+
 function todayDateValue() {
   const today = new Date();
   const year = today.getFullYear();
@@ -620,6 +668,16 @@ function theaterExists(theaterName) {
   return theaters.some((theater) => normalizeTheaterName(theater.name) === normalizeTheaterName(theaterName));
 }
 
+function renderTheaterCardName(theaterName) {
+  if (theaterName === "梅田芸術劇場メインホール") {
+    return `梅田芸術劇場<br class="pc-name-break">メインホール`;
+  }
+  if (theaterName === "梅田芸術劇場シアター・ドラマシティ") {
+    return `梅田芸術劇場<br class="pc-name-break">シアター・ドラマシティ`;
+  }
+  return theaterName;
+}
+
 function renderTheaterNameLink(theaterName) {
   const theater = theaters.find((item) => normalizeTheaterName(item.name) === normalizeTheaterName(theaterName));
   if (theater) {
@@ -647,9 +705,25 @@ function scrollToTheaterList() {
   document.querySelector("#theaterList")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function scrollToSelectedTheaterArea() {
+  const selectedArea = getSelectedTheaterArea();
+  if (selectedArea === "全国") {
+    scrollToTheaterList();
+    return;
+  }
+
+  const targetHeading = [...document.querySelectorAll(".area-heading")]
+    .find((heading) => heading.dataset.area === selectedArea);
+  (targetHeading || document.querySelector("#theaterList"))?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function scrollToPerformanceResults() {
   const performanceSection = document.querySelector("#performancesTitle");
   performanceSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function scrollToReviewStats() {
+  document.querySelector("#stats")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderPerformanceTags(tags) {
@@ -690,8 +764,8 @@ function renderPerformances() {
           ${renderPerformanceTags(item.tags)}
         </div>
         <h3>${item.title}</h3>
-        <dl class="card-data">
-          <div class="performance-time"><span>開演</span><strong>${displayTime(item.time)}</strong></div>
+        <dl class="card-data performance-meta-line">
+          <div class="performance-time performance-time-large"><span>開演</span><strong>${displayTime(item.time)}</strong></div>
           <div>劇場 ${renderTheaterNameLink(item.theater)}</div>
         </dl>
         <div class="card-actions">
@@ -728,16 +802,15 @@ function renderTheaters() {
   Object.keys(groupedTheaters)
     .sort((a, b) => areaSortValue(a) - areaSortValue(b) || a.localeCompare(b, "ja"))
     .forEach((area) => {
-      theaterList?.insertAdjacentHTML("beforeend", `<h3 class="area-heading">${area}</h3>`);
+      theaterList?.insertAdjacentHTML("beforeend", `<h3 class="area-heading" data-area="${area}">${area}</h3>`);
       groupedTheaters[area].forEach((theater) => {
         const count = reviews.filter((review) => normalizeTheaterName(review.theater) === normalizeTheaterName(theater.name)).length;
         theaterList?.insertAdjacentHTML("beforeend", `
           <a class="card theater-card" href="${theaterReviewUrl(theater.name)}">
-            <span class="card-kicker">劇場</span>
-            <h3>${theater.name}</h3>
-            <div class="pill-row">
-              <span class="pill">${count}件のレビュー</span>
-              <span class="pill">詳細を見る</span>
+            <h3>${renderTheaterCardName(theater.name)}</h3>
+            <div class="theater-card-footer">
+              <span class="theater-review-count">${count}件のレビュー</span>
+              <span class="theater-card-link">詳細を見る →</span>
             </div>
           </a>
         `);
@@ -869,7 +942,7 @@ function renderDetail() {
           <span class="pill">おすすめ <span class="stars">${stars(review.recommendation)}</span></span>
         </div>
         ${review.comment ? `<span class="comment-label">コメント</span><p>${review.comment}</p>` : ""}
-        <div class="review-meta">性別：${review.gender} / 投稿日：${review.createdAt}</div>
+        <div class="review-meta">${reviewPersonMeta(review)} / 投稿日：${review.createdAt}</div>
       </article>
     `);
   });
@@ -889,6 +962,8 @@ function updateCommentRequirement() {
 }
 
 function bindEvents() {
+  setupMobileMenu();
+
   document.querySelector("#performanceSearch")?.addEventListener("submit", (event) => {
     event.preventDefault();
     renderPerformances();
@@ -898,12 +973,7 @@ function bindEvents() {
   document.querySelector("#theaterAreaFilter")?.addEventListener("submit", (event) => {
     event.preventDefault();
     renderTheaters();
-    scrollToTheaterList();
-  });
-
-  document.querySelector("#theaterAreaInput")?.addEventListener("change", () => {
-    renderTheaters();
-    scrollToTheaterList();
+    scrollToSelectedTheaterArea();
   });
 
   document.querySelector("#seatSearch")?.addEventListener("submit", (event) => {
@@ -914,6 +984,7 @@ function bindEvents() {
       seat: document.querySelector("#seatInput").value
     };
     renderDetail();
+    scrollToReviewStats();
   });
 
   document.querySelector("#theaterList")?.addEventListener("click", (event) => {
@@ -967,7 +1038,7 @@ function bindEvents() {
     const newReview = {
       theater: document.querySelector("#postTheater").value,
       showTitle: document.querySelector("#postShow").value.trim(),
-      gender: document.querySelector("#postGender").value,
+      height: formatHeight(document.querySelector("#postHeight").value),
       floor: document.querySelector("#postFloor").value,
       row: document.querySelector("#postRow").value,
       seat: document.querySelector("#postSeat").value,
@@ -987,7 +1058,8 @@ function bindEvents() {
         type: "seat_review",
         theater: newReview.theater,
         show_title: newReview.showTitle,
-        gender: newReview.gender,
+        height: newReview.height,
+        gender: newReview.height,
         floor: newReview.floor,
         row: newReview.row,
         seat: newReview.seat,
