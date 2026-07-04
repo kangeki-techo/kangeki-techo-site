@@ -659,12 +659,12 @@
       }
 
       .theater-card .pc-name-break,
-      .detail-title .pc-name-break {
+      #theaterHeroName .pc-name-break {
         display: initial;
       }
 
       .theater-card .mobile-name-space,
-      .detail-title .mobile-name-space {
+      #theaterHeroName .mobile-name-space {
         display: none;
       }
     }
