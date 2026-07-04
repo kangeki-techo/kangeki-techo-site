@@ -398,6 +398,12 @@
       background: var(--navy-soft);
     }
 
+    .btn:disabled,
+    .btn[aria-busy="true"] {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
     .btn.gold {
       color: white;
       background: var(--navy);
@@ -651,6 +657,10 @@
       .theater-card .pc-name-break {
         display: initial;
       }
+
+      .theater-card .mobile-name-space {
+        display: none;
+      }
     }
 
     .layout {
@@ -712,6 +722,10 @@
 
     .pc-name-break {
       display: none;
+    }
+
+    .mobile-name-space {
+      display: inline;
     }
 
     .theater-card-footer {

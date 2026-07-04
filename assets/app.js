@@ -751,6 +751,9 @@ function renderTheaterCardName(theaterName) {
   if (theaterName === "梅田芸術劇場シアター・ドラマシティ") {
     return `梅田芸術劇場<br class="pc-name-break">シアター・ドラマシティ`;
   }
+  if (theaterName === "東京国際フォーラム ホールC") {
+    return `東京国際フォーラム<span class="mobile-name-space"> </span><br class="pc-name-break">ホールC`;
+  }
   return theaterName;
 }
 
@@ -800,6 +803,15 @@ function scrollToPerformanceResults() {
 
 function scrollToReviewStats() {
   document.querySelector("#stats")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function setPerformanceSearchLoading(isLoading) {
+  const button = document.querySelector("#performanceSearch button[type='submit']");
+  if (!button) return;
+
+  button.textContent = isLoading ? "検索中" : "公演を探す";
+  button.disabled = isLoading;
+  button.setAttribute("aria-busy", String(isLoading));
 }
 
 function renderPerformanceTags(tags) {
@@ -1069,12 +1081,14 @@ function bindEvents() {
 
   document.querySelector("#performanceSearch")?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    setPerformanceSearchLoading(true);
     dataReady = false;
     renderPerformances();
     const loaded = await loadRemoteData(getRemoteParams());
     if (!loaded) loadDataCache(getRemoteParams());
     renderPerformances();
     scrollToPerformanceResults();
+    window.setTimeout(() => setPerformanceSearchLoading(false), 700);
   });
 
   document.querySelector("#theaterAreaFilter")?.addEventListener("submit", (event) => {
