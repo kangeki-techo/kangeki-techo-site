@@ -294,6 +294,10 @@
       min-width: 0;
     }
 
+    .hero .form-grid .btn {
+      min-width: 126px;
+    }
+
     .compare-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -654,11 +658,13 @@
         top: 3mm;
       }
 
-      .theater-card .pc-name-break {
+      .theater-card .pc-name-break,
+      .detail-title .pc-name-break {
         display: initial;
       }
 
-      .theater-card .mobile-name-space {
+      .theater-card .mobile-name-space,
+      .detail-title .mobile-name-space {
         display: none;
       }
     }

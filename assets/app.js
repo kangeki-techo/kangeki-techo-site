@@ -989,7 +989,7 @@ function renderDetail() {
   const visibleReviews = getVisibleReviews();
   setupDetailSeatSelects(theater.name);
 
-  detailName.textContent = theater.name;
+  detailName.innerHTML = renderTheaterCardName(theater.name);
   const heroName = document.querySelector("#theaterHeroName");
   if (heroName) heroName.textContent = theater.name;
   document.querySelector("#detailAddress").textContent = theater.address;
