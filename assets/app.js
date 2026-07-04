@@ -1,7 +1,160 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzOWOuuQzDxR9cP3GeUeEDOlYJ120LXwmQvSkN1fVp7L8OPEFUIzAcngVL5zVNfhZf0Tw/exec";
 
 let performances = [];
-let theaters = [];
+const baseTheaters = [
+  {
+    id: "theater-crea",
+    name: "シアタークリエ",
+    area: "東京",
+    address: "東京都千代田区有楽町一丁目",
+    access: "日比谷駅A13出口より徒歩1分。有楽町駅・銀座駅からも徒歩圏内。",
+    capacity: "約600席",
+    officialUrl: "https://www.tohostage.com/theatre_crea/",
+    seatMapUrl: "https://crea.tohostage.com/doc/crea.pdf"
+  },
+  {
+    id: "nissay-theatre",
+    name: "日生劇場",
+    area: "東京",
+    address: "東京都千代田区有楽町一丁目",
+    access: "日比谷駅・有楽町駅から徒歩圏内。",
+    capacity: "約1,300席",
+    officialUrl: "https://www.nissaytheatre.or.jp/",
+    seatMapUrl: ""
+  },
+  {
+    id: "parco-theater",
+    name: "PARCO劇場",
+    area: "東京",
+    address: "東京都渋谷区宇田川町",
+    access: "渋谷駅から徒歩圏内。",
+    capacity: "約630席",
+    officialUrl: "https://stage.parco.jp/parcotheater/",
+    seatMapUrl: ""
+  },
+  {
+    id: "brillia-hall",
+    name: "東京建物 Brillia HALL",
+    area: "東京",
+    address: "東京都豊島区東池袋一丁目",
+    access: "池袋駅東口32番出口より徒歩4分。Hareza池袋周辺の各バス停からも徒歩圏内。",
+    capacity: "約1,300席",
+    officialUrl: "https://toshima-theatre.jp/",
+    seatMapUrl: ""
+  },
+  {
+    id: "shinbashi-enbujo",
+    name: "新橋演舞場",
+    area: "東京",
+    address: "東京都中央区銀座六丁目",
+    access: "東銀座駅・築地市場駅から徒歩圏内。",
+    capacity: "約1,400席",
+    officialUrl: "https://www.shochiku.co.jp/play/theater/enbujyo/",
+    seatMapUrl: ""
+  },
+  {
+    id: "ex-theater-ariake",
+    name: "EX THEATER ARIAKE",
+    area: "東京",
+    address: "東京都江東区有明三丁目",
+    access: "有明駅・国際展示場駅から徒歩圏内。",
+    capacity: "約1,500席",
+    officialUrl: "https://www.ex-theater.jp/ariake/",
+    seatMapUrl: ""
+  },
+  {
+    id: "tokyo-international-forum-c",
+    name: "東京国際フォーラム ホールC",
+    area: "東京",
+    address: "東京都千代田区丸の内三丁目",
+    access: "有楽町駅より徒歩1分。東京駅からも徒歩圏内。",
+    capacity: "約1,500席",
+    officialUrl: "https://www.t-i-forum.co.jp/",
+    seatMapUrl: ""
+  },
+  {
+    id: "theatre-orb",
+    name: "東急シアターオーブ",
+    area: "東京",
+    address: "東京都渋谷区渋谷二丁目",
+    access: "渋谷駅直結、渋谷ヒカリエ内。",
+    capacity: "約1,900席",
+    officialUrl: "https://theatre-orb.com/",
+    seatMapUrl: ""
+  },
+  {
+    id: "osaka-shiki-theatre",
+    name: "大阪四季劇場",
+    area: "大阪",
+    address: "大阪府大阪市北区梅田",
+    access: "大阪駅・梅田駅から徒歩圏内。",
+    capacity: "約1,100席",
+    officialUrl: "https://www.shiki.jp/theatres/osaka/",
+    seatMapUrl: ""
+  },
+  {
+    id: "umeda-main-hall",
+    name: "梅田芸術劇場メインホール",
+    area: "大阪",
+    address: "大阪府大阪市北区茶屋町",
+    access: "阪急大阪梅田駅茶屋町口より徒歩5分。JR大阪駅・Osaka Metro梅田駅からも徒歩圏内。",
+    capacity: "約1,900席",
+    officialUrl: "https://www.umegei.com/",
+    seatMapUrl: ""
+  },
+  {
+    id: "umeda-theater-drama-city",
+    name: "梅田芸術劇場シアター・ドラマシティ",
+    area: "大阪",
+    address: "大阪府大阪市北区茶屋町",
+    access: "阪急大阪梅田駅茶屋町口より徒歩5分。JR大阪駅・Osaka Metro梅田駅からも徒歩圏内。",
+    capacity: "約900席",
+    officialUrl: "https://www.umegei.com/",
+    seatMapUrl: ""
+  },
+  {
+    id: "sky-theater-mbs",
+    name: "SkyシアターMBS",
+    area: "大阪",
+    address: "大阪府大阪市北区梅田三丁目",
+    access: "JR大阪駅西口すぐ。西梅田駅・大阪梅田駅からも徒歩圏内。",
+    capacity: "約1,300席",
+    officialUrl: "https://www.sky-theater.jp/",
+    seatMapUrl: ""
+  },
+  {
+    id: "misonoza",
+    name: "御園座",
+    area: "名古屋",
+    address: "愛知県名古屋市中区栄一丁目",
+    access: "地下鉄東山線・鶴舞線 伏見駅6番出口より徒歩2分。",
+    capacity: "約1,300席",
+    officialUrl: "https://www.misonoza.co.jp/",
+    seatMapUrl: ""
+  },
+  {
+    id: "aichi-prefectural-art-theater",
+    name: "愛知県芸術劇場 大ホール",
+    area: "名古屋",
+    address: "愛知県名古屋市東区東桜一丁目",
+    access: "栄駅より徒歩3分、栄町駅より徒歩2分。オアシス21から連絡通路あり。",
+    capacity: "約2,500席",
+    officialUrl: "https://www-stage.aac.pref.aichi.jp/",
+    seatMapUrl: ""
+  },
+  {
+    id: "hakataza",
+    name: "博多座",
+    area: "福岡",
+    address: "福岡県福岡市博多区下川端町",
+    access: "福岡市地下鉄 中洲川端駅7番出口直結。",
+    capacity: "約1,450席",
+    officialUrl: "https://www.hakataza.co.jp/",
+    seatMapUrl: "https://www.hakataza.co.jp/lineup/images/202511-spy-family/zaseki.pdf"
+  }
+];
+
+let theaters = [...baseTheaters];
 
 function numberedOptions(count, suffix, start = 1) {
   return Array.from({ length: count }, (_, index) => `${index + start}${suffix}`);
@@ -171,18 +324,7 @@ function applyRemoteData(data) {
     }));
   }
 
-  if (Array.isArray(data.theaters)) {
-    theaters = data.theaters.map((item) => ({
-      id: getField(item, ["id", "ID"]),
-      name: getField(item, ["name", "劇場名"]),
-      area: normalizeArea(getField(item, ["area", "地域"])),
-      address: getField(item, ["address", "住所"]),
-      access: getField(item, ["access", "アクセス"]),
-      capacity: getField(item, ["capacity", "座席数"]),
-      officialUrl: getField(item, ["official_url", "公式リンク", "公式サイト", "公式URL"]),
-      seatMapUrl: getField(item, ["seat_map_url", "座席表URL", "座席表リンク", "座席表画像"])
-    }));
-  }
+  theaters = [...baseTheaters];
 
   if (data.review_counts) {
     reviewCounts = normalizeReviewCounts(data.review_counts);
@@ -214,8 +356,8 @@ function applyRemoteData(data) {
   }
 
   const requestedTheater = getQuery("theater");
-  const requestedMatch = theaters.find((theater) => normalizeTheaterName(theater.name) === normalizeTheaterName(requestedTheater));
-  const selectedMatch = theaters.find((theater) => normalizeTheaterName(theater.name) === normalizeTheaterName(selectedTheater));
+  const requestedMatch = getTheaterByName(requestedTheater);
+  const selectedMatch = getTheaterByName(selectedTheater);
   if (requestedMatch) {
     selectedTheater = requestedMatch.name;
   } else if (!selectedMatch) {
@@ -239,6 +381,10 @@ function normalizeReviewCounts(counts) {
     result[normalizeTheaterName(theater)] = Number(count || 0);
     return result;
   }, {});
+}
+
+function getTheaterByName(theaterName) {
+  return theaters.find((theater) => normalizeTheaterName(theater.name) === normalizeTheaterName(theaterName));
 }
 
 function getField(item, keys, fallback = "") {
@@ -582,7 +728,7 @@ function theaterReviewUrl(theater) {
 }
 
 function theaterExists(theaterName) {
-  return theaters.some((theater) => normalizeTheaterName(theater.name) === normalizeTheaterName(theaterName));
+  return Boolean(getTheaterByName(theaterName));
 }
 
 function renderTheaterCardName(theaterName) {
@@ -596,7 +742,7 @@ function renderTheaterCardName(theaterName) {
 }
 
 function renderTheaterNameLink(theaterName) {
-  const theater = theaters.find((item) => normalizeTheaterName(item.name) === normalizeTheaterName(theaterName));
+  const theater = getTheaterByName(theaterName);
   if (theater) {
     return `<a class="theater-link" href="${theaterReviewUrl(theater.name)}">${theaterName}</a>`;
   }
@@ -785,9 +931,9 @@ function renderDetail() {
   const detailName = document.querySelector("#detailName");
   if (!detailName) return;
 
-  const theater = theaters.find((item) => normalizeTheaterName(item.name) === normalizeTheaterName(selectedTheater)) || theaters[0];
+  const theater = getTheaterByName(selectedTheater) || (!getQuery("theater") ? theaters[0] : null);
   if (!theater) {
-    detailName.textContent = "劇場情報を読み込めませんでした";
+    detailName.textContent = "劇場情報が未登録です";
     const heroName = document.querySelector("#theaterHeroName");
     if (heroName) heroName.textContent = "劇場情報";
     document.querySelector("#detailAddress").textContent = "-";
@@ -811,7 +957,7 @@ function renderDetail() {
     }
     document.querySelector("#stats").innerHTML = "";
     document.querySelector("#reviewMeta").textContent = "";
-    document.querySelector("#reviewList").innerHTML = `<div class="empty">劇場情報を読み込めませんでした。時間をおいて再読み込みしてください。</div>`;
+    document.querySelector("#reviewList").innerHTML = `<div class="empty">この劇場はまだ固定データに登録されていません。</div>`;
     return;
   }
   selectedTheater = theater.name;
