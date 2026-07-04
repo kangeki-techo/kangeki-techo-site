@@ -3,154 +3,154 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzOWOuuQzDxR9cP3GeUeEDO
 let performances = [];
 const baseTheaters = [
   {
-    id: "theater-crea",
+    id: "t001",
     name: "シアタークリエ",
     area: "東京",
-    address: "東京都千代田区有楽町一丁目",
-    access: "日比谷駅A13出口より徒歩1分。有楽町駅・銀座駅からも徒歩圏内。",
-    capacity: "約600席",
-    officialUrl: "https://www.tohostage.com/theatre_crea/",
-    seatMapUrl: "https://crea.tohostage.com/doc/crea.pdf"
+    address: "東京都千代田区有楽町1-2-1",
+    access: "日比谷駅直結 / 有楽町駅から徒歩約7分",
+    capacity: "609席",
+    officialUrl: "https://crea.tohostage.com/",
+    seatMapUrl: "https://crea.tohostage.com/facility/seatingchart.html"
   },
   {
-    id: "nissay-theatre",
+    id: "t002",
     name: "日生劇場",
     area: "東京",
-    address: "東京都千代田区有楽町一丁目",
-    access: "日比谷駅・有楽町駅から徒歩圏内。",
-    capacity: "約1,300席",
+    address: "東京都千代田区有楽町1-1-1",
+    access: "日比谷駅A13出口から徒歩約1分 / 有楽町駅から徒歩約10分",
+    capacity: "1,334席",
     officialUrl: "https://www.nissaytheatre.or.jp/",
-    seatMapUrl: ""
+    seatMapUrl: "https://www.nissaytheatre.or.jp/seat/"
   },
   {
-    id: "parco-theater",
-    name: "PARCO劇場",
-    area: "東京",
-    address: "東京都渋谷区宇田川町",
-    access: "渋谷駅から徒歩圏内。",
-    capacity: "約630席",
-    officialUrl: "https://stage.parco.jp/parcotheater/",
-    seatMapUrl: ""
-  },
-  {
-    id: "brillia-hall",
-    name: "東京建物 Brillia HALL",
-    area: "東京",
-    address: "東京都豊島区東池袋一丁目",
-    access: "池袋駅東口32番出口より徒歩4分。Hareza池袋周辺の各バス停からも徒歩圏内。",
-    capacity: "約1,300席",
-    officialUrl: "https://toshima-theatre.jp/",
-    seatMapUrl: ""
-  },
-  {
-    id: "shinbashi-enbujo",
-    name: "新橋演舞場",
-    area: "東京",
-    address: "東京都中央区銀座六丁目",
-    access: "東銀座駅・築地市場駅から徒歩圏内。",
-    capacity: "約1,400席",
-    officialUrl: "https://www.shochiku.co.jp/play/theater/enbujyo/",
-    seatMapUrl: ""
-  },
-  {
-    id: "ex-theater-ariake",
-    name: "EX THEATER ARIAKE",
-    area: "東京",
-    address: "東京都江東区有明三丁目",
-    access: "有明駅・国際展示場駅から徒歩圏内。",
-    capacity: "約1,500席",
-    officialUrl: "https://www.ex-theater.jp/ariake/",
-    seatMapUrl: ""
-  },
-  {
-    id: "tokyo-international-forum-c",
-    name: "東京国際フォーラム ホールC",
-    area: "東京",
-    address: "東京都千代田区丸の内三丁目",
-    access: "有楽町駅より徒歩1分。東京駅からも徒歩圏内。",
-    capacity: "約1,500席",
-    officialUrl: "https://www.t-i-forum.co.jp/",
-    seatMapUrl: ""
-  },
-  {
-    id: "theatre-orb",
-    name: "東急シアターオーブ",
-    area: "東京",
-    address: "東京都渋谷区渋谷二丁目",
-    access: "渋谷駅直結、渋谷ヒカリエ内。",
-    capacity: "約1,900席",
-    officialUrl: "https://theatre-orb.com/",
-    seatMapUrl: ""
-  },
-  {
-    id: "osaka-shiki-theatre",
-    name: "大阪四季劇場",
-    area: "大阪",
-    address: "大阪府大阪市北区梅田",
-    access: "大阪駅・梅田駅から徒歩圏内。",
-    capacity: "約1,100席",
-    officialUrl: "https://www.shiki.jp/theatres/osaka/",
-    seatMapUrl: ""
-  },
-  {
-    id: "umeda-main-hall",
-    name: "梅田芸術劇場メインホール",
-    area: "大阪",
-    address: "大阪府大阪市北区茶屋町",
-    access: "阪急大阪梅田駅茶屋町口より徒歩5分。JR大阪駅・Osaka Metro梅田駅からも徒歩圏内。",
-    capacity: "約1,900席",
-    officialUrl: "https://www.umegei.com/",
-    seatMapUrl: ""
-  },
-  {
-    id: "umeda-theater-drama-city",
-    name: "梅田芸術劇場シアター・ドラマシティ",
-    area: "大阪",
-    address: "大阪府大阪市北区茶屋町",
-    access: "阪急大阪梅田駅茶屋町口より徒歩5分。JR大阪駅・Osaka Metro梅田駅からも徒歩圏内。",
-    capacity: "約900席",
-    officialUrl: "https://www.umegei.com/",
-    seatMapUrl: ""
-  },
-  {
-    id: "sky-theater-mbs",
-    name: "SkyシアターMBS",
-    area: "大阪",
-    address: "大阪府大阪市北区梅田三丁目",
-    access: "JR大阪駅西口すぐ。西梅田駅・大阪梅田駅からも徒歩圏内。",
-    capacity: "約1,300席",
-    officialUrl: "https://www.sky-theater.jp/",
-    seatMapUrl: ""
-  },
-  {
-    id: "misonoza",
-    name: "御園座",
-    area: "名古屋",
-    address: "愛知県名古屋市中区栄一丁目",
-    access: "地下鉄東山線・鶴舞線 伏見駅6番出口より徒歩2分。",
-    capacity: "約1,300席",
-    officialUrl: "https://www.misonoza.co.jp/",
-    seatMapUrl: ""
-  },
-  {
-    id: "aichi-prefectural-art-theater",
-    name: "愛知県芸術劇場 大ホール",
-    area: "名古屋",
-    address: "愛知県名古屋市東区東桜一丁目",
-    access: "栄駅より徒歩3分、栄町駅より徒歩2分。オアシス21から連絡通路あり。",
-    capacity: "約2,500席",
-    officialUrl: "https://www-stage.aac.pref.aichi.jp/",
-    seatMapUrl: ""
-  },
-  {
-    id: "hakataza",
+    id: "t003",
     name: "博多座",
     area: "福岡",
-    address: "福岡県福岡市博多区下川端町",
-    access: "福岡市地下鉄 中洲川端駅7番出口直結。",
-    capacity: "約1,450席",
+    address: "福岡県福岡市博多区下川端町２−１",
+    access: "中洲川端駅7番出口直結 / 博多駅から地下鉄で約4分",
+    capacity: "1,500席",
     officialUrl: "https://www.hakataza.co.jp/",
-    seatMapUrl: "https://www.hakataza.co.jp/lineup/images/202511-spy-family/zaseki.pdf"
+    seatMapUrl: "https://www.hakataza.co.jp/theater/floormap/view/"
+  },
+  {
+    id: "t004",
+    name: "梅田芸術劇場メインホール",
+    area: "大阪",
+    address: "大阪府大阪市北区茶屋町19-1",
+    access: "大阪梅田駅茶屋町口から徒歩約5分 / 中津駅から徒歩約5分",
+    capacity: "1,905席",
+    officialUrl: "https://www.umegei.com/",
+    seatMapUrl: "https://www.umegei.com/guide/seat/#pcTab1"
+  },
+  {
+    id: "t005",
+    name: "梅田芸術劇場シアター・ドラマシティ",
+    area: "大阪",
+    address: "大阪府大阪市北区茶屋町19-2",
+    access: "大阪梅田駅茶屋町口から徒歩約5分 / 中津駅から徒歩約5分",
+    capacity: "898席",
+    officialUrl: "https://www.umegei.com/",
+    seatMapUrl: "https://www.umegei.com/guide/seat/#pcTab2"
+  },
+  {
+    id: "t006",
+    name: "愛知県芸術劇場大ホール",
+    area: "名古屋",
+    address: "愛知県名古屋市東区東桜一丁目13番2号",
+    access: "栄駅から徒歩約3分 / 栄町駅から徒歩約2分",
+    capacity: "2,480席",
+    officialUrl: "https://www-stage.aac.pref.aichi.jp/",
+    seatMapUrl: "https://www-stage.aac.pref.aichi.jp/facility/main-seat.html"
+  },
+  {
+    id: "t007",
+    name: "東京建物 Brillia HALL",
+    area: "東京",
+    address: "東京都豊島区東池袋一丁目19番1号",
+    access: "池袋駅東口（北）32番出口から徒歩約4分",
+    capacity: "1,248席",
+    officialUrl: "https://toshima-theatre.jp/",
+    seatMapUrl: "https://toshima-theatre.jp/about/seating/"
+  },
+  {
+    id: "t008",
+    name: "新歌舞伎座",
+    area: "大阪",
+    address: "大阪府大阪市天王寺区上本町６丁目５−１３",
+    access: "大阪上本町駅と直結 / 谷町九丁目駅から徒歩5分",
+    capacity: "1,501席",
+    officialUrl: "https://www.shinkabukiza.co.jp/",
+    seatMapUrl: "https://www.shinkabukiza.co.jp/seat/"
+  },
+  {
+    id: "t009",
+    name: "御園座",
+    area: "名古屋",
+    address: "愛知県名古屋市中区栄 1−6−14",
+    access: "伏見駅6番出口から徒歩約2分",
+    capacity: "1,299席",
+    officialUrl: "https://www.misonoza.co.jp/",
+    seatMapUrl: "https://www.misonoza.co.jp/seat/"
+  },
+  {
+    id: "t010",
+    name: "SkyシアターMBS",
+    area: "大阪",
+    address: "大阪府大阪市北区梅田3-2-2 ＪＰタワー大阪6F",
+    access: "JR大阪駅西口すぐ / 西梅田駅・大阪梅田駅から徒歩圏内",
+    capacity: "1,289席",
+    officialUrl: "https://stm-mle.jp/",
+    seatMapUrl: "https://stm-mle.jp/about#Seat"
+  },
+  {
+    id: "t011",
+    name: "東急シアターオーブ",
+    area: "東京",
+    address: "東京都渋谷区渋谷2-21-1 渋谷ヒカリエ11階",
+    access: "各線渋谷駅から直結",
+    capacity: "1,972席",
+    officialUrl: "https://theatre-orb.com/",
+    seatMapUrl: "https://theatre-orb.com/seating/"
+  },
+  {
+    id: "t012",
+    name: "福岡市民ホール 大ホール",
+    area: "福岡",
+    address: "福岡県福岡市中央区天神5丁目2-2",
+    access: "天神駅から徒歩約10分 / 天神南駅から徒歩約17分 / 福岡（天神）駅から徒歩約13分",
+    capacity: "2,016席",
+    officialUrl: "https://www.fukuoka-civic-hall.jp/",
+    seatMapUrl: "https://www.fukuoka-civic-hall.jp/facility/hall1/"
+  },
+  {
+    id: "t013",
+    name: "札幌文化芸術劇場 hitaru",
+    area: "北海道",
+    address: "北海道札幌市中央区北1条西1丁目",
+    access: "大通駅30番出口から徒歩約2分 / 札幌駅南口から徒歩約10分 / 西4丁目駅から徒歩約12分",
+    capacity: "2,302席",
+    officialUrl: "https://www.sapporo-community-plaza.jp/",
+    seatMapUrl: "https://www.sapporo-community-plaza.jp/theater_seat.html"
+  },
+  {
+    id: "t014",
+    name: "EX THEATER ARIAKE",
+    area: "東京",
+    address: "東京都江東区有明3丁目3番8号 東京ドリームパーク3階",
+    access: "東京ビッグサイト駅から徒歩約5分 / 国際展示場駅から徒歩約9分",
+    capacity: "1,546席",
+    officialUrl: "https://tdp.tv-asahi.co.jp/theater/",
+    seatMapUrl: "https://tdp.tv-asahi.co.jp/theater/about/"
+  },
+  {
+    id: "t015",
+    name: "東京国際フォーラム ホールC",
+    area: "東京",
+    address: "東京都千代田区丸の内3丁目5番1号",
+    access: "有楽町駅から徒歩約1分 / 東京駅から徒歩約5分",
+    capacity: "1,502席",
+    officialUrl: "https://www.t-i-forum.co.jp/visitors/facilities/c/",
+    seatMapUrl: "https://www.t-i-forum.co.jp/visitors/facilities/c/seat/"
   }
 ];
 
