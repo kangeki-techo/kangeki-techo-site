@@ -324,7 +324,20 @@ function applyRemoteData(data) {
     }));
   }
 
-  theaters = [...baseTheaters];
+  if (Array.isArray(data.theaters)) {
+    theaters = data.theaters.map((item) => ({
+      id: getField(item, ["id", "ID"]),
+      name: getField(item, ["name", "劇場名"]),
+      area: normalizeArea(getField(item, ["area", "地域"])),
+      address: getField(item, ["address", "住所"]),
+      access: getField(item, ["access", "アクセス"]),
+      capacity: getField(item, ["capacity", "座席数"]),
+      officialUrl: getField(item, ["official_url", "公式リンク", "公式サイト", "公式URL"]),
+      seatMapUrl: getField(item, ["seat_map_url", "座席表URL", "座席表リンク", "座席表画像"])
+    }));
+  } else {
+    theaters = [...baseTheaters];
+  }
 
   if (data.review_counts) {
     reviewCounts = normalizeReviewCounts(data.review_counts);
