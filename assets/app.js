@@ -197,7 +197,7 @@ let theaterSeatOptions = {
 const baseReviews = [];
 
 const storageKey = "kangekiTechoReviews";
-const dataCacheKey = "kangekiTechoDataCacheV2";
+const dataCacheKey = "kangekiTechoDataCacheV3";
 let reviews = [...baseReviews, ...loadSavedReviews()];
 let selectedTheater = getQuery("theater") || theaters[0]?.name || "";
 let seatFilter = { floor: "", row: "", seat: "" };
