@@ -44,22 +44,71 @@ let theaterSeatOptions = {
 const baseReviews = [];
 
 const storageKey = "kangekiTechoReviews";
-const dataCacheKey = "kangekiTechoDataCache";
+const dataCacheKey = "kangekiTechoDataCacheV2";
 let reviews = [...baseReviews, ...loadSavedReviews()];
 let selectedTheater = getQuery("theater") || theaters[0]?.name || "";
 let seatFilter = { floor: "", row: "", seat: "" };
 let dataReady = false;
+let reviewCounts = {};
 
-function loadRemoteData() {
+function getPageView() {
+  if (document.querySelector("#performanceResults")) return "home";
+  if (document.querySelector("#theaterDetail")) return "theater";
+  if (document.querySelector("#theaterList")) return "reviews";
+  if (document.querySelector("#reviewForm")) return "post";
+  return "static";
+}
+
+function shouldLoadRemoteData() {
+  return getPageView() !== "static";
+}
+
+function getRemoteParams() {
+  const view = getPageView();
+  const params = { view };
+
+  if (view === "home") {
+    params.date = normalizeDate(document.querySelector("#dateInput")?.value || todayDateValue());
+    params.area = normalizeArea(document.querySelector("#areaInput")?.value || "全国");
+  }
+
+  if (view === "theater") {
+    params.theater = selectedTheater || getQuery("theater") || "";
+  }
+
+  return params;
+}
+
+function getDataCacheKey(params = getRemoteParams()) {
+  const parts = [
+    dataCacheKey,
+    params.view || getPageView(),
+    params.date || "",
+    params.area || "",
+    normalizeTheaterName(params.theater || "")
+  ];
+  return parts.join(":");
+}
+
+function loadRemoteData(params = getRemoteParams()) {
   if (!API_URL) return Promise.resolve(false);
 
   return new Promise((resolve) => {
-    const callbackName = "__kangekiTechoDataLoaded";
+    const callbackName = `__kangekiTechoDataLoaded_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     const script = document.createElement("script");
     const separator = API_URL.includes("?") ? "&" : "?";
+    const query = new URLSearchParams({
+      action: "getData",
+      callback: callbackName,
+      view: params.view || getPageView()
+    });
+
+    if (params.date) query.set("date", params.date);
+    if (params.area) query.set("area", params.area);
+    if (params.theater) query.set("theater", params.theater);
 
     window[callbackName] = (data) => {
-      saveDataCache(data);
+      saveDataCache(data, params);
       applyRemoteData(data);
       script.remove();
       delete window[callbackName];
@@ -77,14 +126,14 @@ function loadRemoteData() {
       if (window[callbackName]) finishWithError();
     }, 10000);
 
-    script.src = `${API_URL}${separator}action=getData&callback=${callbackName}`;
+    script.src = `${API_URL}${separator}${query.toString()}`;
     document.body.appendChild(script);
   });
 }
 
-function loadDataCache() {
+function loadDataCache(params = getRemoteParams()) {
   try {
-    const cache = JSON.parse(localStorage.getItem(dataCacheKey) || "null");
+    const cache = JSON.parse(localStorage.getItem(getDataCacheKey(params)) || "null");
     if (!cache?.data) return false;
     applyRemoteData(cache.data);
     return true;
@@ -93,9 +142,9 @@ function loadDataCache() {
   }
 }
 
-function saveDataCache(data) {
+function saveDataCache(data, params = getRemoteParams()) {
   try {
-    localStorage.setItem(dataCacheKey, JSON.stringify({
+    localStorage.setItem(getDataCacheKey(params), JSON.stringify({
       savedAt: new Date().toISOString(),
       data
     }));
@@ -108,47 +157,61 @@ function applyRemoteData(data) {
   if (!data) return;
   dataReady = true;
 
-  performances = (data.performances || []).map((item) => ({
-    id: getField(item, ["id", "ID"]),
-    date: getPerformanceDate(item),
-    area: normalizeArea(getField(item, ["area", "地域"])),
-    tags: getPerformanceTags(item),
-    title: getField(item, ["title", "作品名"]),
-    time: getPerformanceTime(item),
-    theater: getField(item, ["theater", "劇場名", "劇場"]),
-    officialUrl: getField(item, ["official_url", "公式サイト", "公式URL"]),
-    ticketUrl: getField(item, ["ticket_url", "チケット購入", "チケットURL"])
-  }));
+  if (Array.isArray(data.performances)) {
+    performances = data.performances.map((item) => ({
+      id: getField(item, ["id", "ID"]),
+      date: getPerformanceDate(item),
+      area: normalizeArea(getField(item, ["area", "地域"])),
+      tags: getPerformanceTags(item),
+      title: getField(item, ["title", "作品名"]),
+      time: getPerformanceTime(item),
+      theater: getField(item, ["theater", "劇場名", "劇場"]),
+      officialUrl: getField(item, ["official_url", "公式サイト", "公式URL"]),
+      ticketUrl: getField(item, ["ticket_url", "チケット購入", "チケットURL"])
+    }));
+  }
 
-  theaters = (data.theaters || []).map((item) => ({
-    id: getField(item, ["id", "ID"]),
-    name: getField(item, ["name", "劇場名"]),
-    area: normalizeArea(getField(item, ["area", "地域"])),
-    address: getField(item, ["address", "住所"]),
-    access: getField(item, ["access", "アクセス"]),
-    capacity: getField(item, ["capacity", "座席数"]),
-    officialUrl: getField(item, ["official_url", "公式リンク", "公式サイト", "公式URL"]),
-    seatMapUrl: getField(item, ["seat_map_url", "座席表URL", "座席表リンク", "座席表画像"])
-  }));
+  if (Array.isArray(data.theaters)) {
+    theaters = data.theaters.map((item) => ({
+      id: getField(item, ["id", "ID"]),
+      name: getField(item, ["name", "劇場名"]),
+      area: normalizeArea(getField(item, ["area", "地域"])),
+      address: getField(item, ["address", "住所"]),
+      access: getField(item, ["access", "アクセス"]),
+      capacity: getField(item, ["capacity", "座席数"]),
+      officialUrl: getField(item, ["official_url", "公式リンク", "公式サイト", "公式URL"]),
+      seatMapUrl: getField(item, ["seat_map_url", "座席表URL", "座席表リンク", "座席表画像"])
+    }));
+  }
 
-  const remoteReviews = (data.seat_reviews || []).map((item) => ({
-    id: getField(item, ["id", "ID"]),
-    createdAt: getField(item, ["created_at", "投稿日", "作成日"]),
-    theater: getField(item, ["theater", "劇場名", "劇場"]),
-    showTitle: getField(item, ["show_title", "観劇作品", "作品名"]),
-    height: formatHeight(getField(item, ["height", "身長"])),
-    gender: getField(item, ["gender", "性別"]),
-    floor: getField(item, ["floor", "階"]),
-    row: getField(item, ["row", "列"]),
-    seat: getField(item, ["seat", "番"]),
-    visibility: Number(getField(item, ["visibility_rating", "見え方評価", "見え方"], 0)),
-    sound: Number(getField(item, ["sound_rating", "音響評価", "音響"], 0)),
-    recommendation: Number(getField(item, ["recommendation_rating", "おすすめ度評価", "おすすめ度"], 0)),
-    comment: getField(item, ["comment", "コメント"])
-  }));
+  if (data.review_counts) {
+    reviewCounts = normalizeReviewCounts(data.review_counts);
+  }
 
-  theaterSeatOptions = buildSeatOptions(data.theater_seat_rules || data.theater_seat_options || []);
-  reviews = [...remoteReviews, ...loadSavedReviews()];
+  if (Array.isArray(data.seat_reviews)) {
+    const remoteReviews = data.seat_reviews.map((item) => ({
+      id: getField(item, ["id", "ID"]),
+      createdAt: getField(item, ["created_at", "投稿日", "作成日"]),
+      theater: getField(item, ["theater", "劇場名", "劇場"]),
+      showTitle: getField(item, ["show_title", "観劇作品", "作品名"]),
+      height: formatHeight(getField(item, ["height", "身長"])),
+      gender: getField(item, ["gender", "性別"]),
+      floor: getField(item, ["floor", "階"]),
+      row: getField(item, ["row", "列"]),
+      seat: getField(item, ["seat", "番"]),
+      visibility: Number(getField(item, ["visibility_rating", "見え方評価", "見え方"], 0)),
+      sound: Number(getField(item, ["sound_rating", "音響評価", "音響"], 0)),
+      recommendation: Number(getField(item, ["recommendation_rating", "おすすめ度評価", "おすすめ度"], 0)),
+      comment: getField(item, ["comment", "コメント"])
+    }));
+
+    reviews = [...remoteReviews, ...loadSavedReviews()];
+  }
+
+  const seatRuleRows = data.theater_seat_rules || data.theater_seat_options;
+  if (Array.isArray(seatRuleRows)) {
+    theaterSeatOptions = buildSeatOptions(seatRuleRows);
+  }
 
   const requestedTheater = getQuery("theater");
   const requestedMatch = theaters.find((theater) => normalizeTheaterName(theater.name) === normalizeTheaterName(requestedTheater));
@@ -160,6 +223,22 @@ function applyRemoteData(data) {
   } else {
     selectedTheater = selectedMatch.name;
   }
+}
+
+function normalizeReviewCounts(counts) {
+  if (Array.isArray(counts)) {
+    return counts.reduce((result, item) => {
+      const theater = getField(item, ["theater", "劇場名", "劇場", "name"]);
+      const count = Number(getField(item, ["count", "レビュー数"], 0));
+      if (theater) result[normalizeTheaterName(theater)] = count;
+      return result;
+    }, {});
+  }
+
+  return Object.entries(counts || {}).reduce((result, [theater, count]) => {
+    result[normalizeTheaterName(theater)] = Number(count || 0);
+    return result;
+  }, {});
 }
 
 function getField(item, keys, fallback = "") {
@@ -644,7 +723,8 @@ function renderTheaters() {
     .forEach((area) => {
       theaterList?.insertAdjacentHTML("beforeend", `<h3 class="area-heading" data-area="${area}">${area}</h3>`);
       groupedTheaters[area].forEach((theater) => {
-        const count = reviews.filter((review) => normalizeTheaterName(review.theater) === normalizeTheaterName(theater.name)).length;
+        const theaterKey = normalizeTheaterName(theater.name);
+        const count = reviewCounts[theaterKey] ?? reviews.filter((review) => normalizeTheaterName(review.theater) === theaterKey).length;
         theaterList?.insertAdjacentHTML("beforeend", `
           <a class="card theater-card" href="${theaterReviewUrl(theater.name)}">
             <h3>${renderTheaterCardName(theater.name)}</h3>
@@ -828,8 +908,12 @@ function updateCommentRequirement() {
 function bindEvents() {
   setupMobileMenu();
 
-  document.querySelector("#performanceSearch")?.addEventListener("submit", (event) => {
+  document.querySelector("#performanceSearch")?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    dataReady = false;
+    renderPerformances();
+    const loaded = await loadRemoteData(getRemoteParams());
+    if (!loaded) loadDataCache(getRemoteParams());
     renderPerformances();
     scrollToPerformanceResults();
   });
@@ -990,18 +1074,20 @@ function renderAll() {
 renderAll();
 bindEvents();
 
-const hasCachedData = loadDataCache();
+const hasCachedData = shouldLoadRemoteData() && loadDataCache();
 if (hasCachedData) {
   renderAll();
 }
 
-loadRemoteData().then((loaded) => {
-  if (loaded) {
-    renderAll();
-  } else if (hasCachedData) {
-    showToast("最新データの読み込みに時間がかかっています。前回のデータを表示しています。");
-  } else {
-    renderAll();
-    showToast("データの読み込みに時間がかかっています。時間をおいて再読み込みしてください。");
-  }
-});
+if (shouldLoadRemoteData()) {
+  loadRemoteData().then((loaded) => {
+    if (loaded) {
+      renderAll();
+    } else if (hasCachedData) {
+      showToast("最新データの読み込みに時間がかかっています。前回のデータを表示しています。");
+    } else {
+      renderAll();
+      showToast("データの読み込みに時間がかかっています。時間をおいて再読み込みしてください。");
+    }
+  });
+}
