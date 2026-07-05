@@ -2578,6 +2578,26 @@ function setPerformanceSearchLoading(isLoading) {
   button.setAttribute("aria-busy", String(isLoading));
 }
 
+function renderPerformanceLoading() {
+  return Array.from({ length: 3 }, () => `
+    <article class="card performance-card loading-card" aria-hidden="true">
+      <div class="pill-row">
+        <span class="loading-line loading-pill"></span>
+        <span class="loading-line loading-pill wide-pill"></span>
+      </div>
+      <h3><span class="loading-line title-line"></span></h3>
+      <dl class="card-data performance-meta-line">
+        <div class="performance-time performance-time-large"><span class="loading-line short-line"></span></div>
+        <div><span class="loading-line medium-line"></span></div>
+      </dl>
+      <div class="card-actions">
+        <span class="loading-button"></span>
+        <span class="loading-button"></span>
+      </div>
+    </article>
+  `).join("");
+}
+
 function renderPerformanceTags(tags) {
   const displayTags = Array.isArray(tags) && tags.length ? tags : ["公演"];
   return displayTags.map((tag) => `<span class="pill">${tag}</span>`).join("");
@@ -2601,7 +2621,7 @@ function renderPerformances() {
 
   if (!dataReady) {
     performanceMeta.textContent = "公演情報を読み込んでいます";
-    performanceResults.innerHTML = `<div class="empty wide">公演情報を読み込んでいます。少しだけお待ちください。</div>`;
+    performanceResults.innerHTML = renderPerformanceLoading();
     return;
   }
 
