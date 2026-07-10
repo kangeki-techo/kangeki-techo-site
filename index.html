@@ -43,24 +43,11 @@
             日付
             <input type="date" id="dateInput">
           </label>
-          <label>
-            地域
-            <select id="areaInput">
-              <option>全国</option>
-              <option>東京</option>
-              <option>大阪</option>
-              <option>名古屋</option>
-              <option>福岡</option>
-              <option>北海道</option>
-              <option>東北</option>
-              <option>関東</option>
-              <option>中部</option>
-              <option>関西</option>
-              <option>中国</option>
-              <option>四国</option>
-              <option>九州</option>
-            </select>
-          </label>
+          <div class="field">
+            <span class="field-label">地域</span>
+            <input type="hidden" id="areaInput" value="全国">
+            <div class="region-picker" id="areaPicker" data-region-picker data-target="areaInput"></div>
+          </div>
           <button class="btn gold performance-search-button" type="submit">公演を探す</button>
         </div>
       </form>

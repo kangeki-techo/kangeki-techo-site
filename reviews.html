@@ -49,24 +49,11 @@
           </div>
 
           <form class="theater-filter" id="theaterAreaFilter">
-            <label>
-              地域
-              <select id="theaterAreaInput">
-                <option>全国</option>
-                <option>東京</option>
-                <option>大阪</option>
-                <option>名古屋</option>
-                <option>福岡</option>
-                <option>北海道</option>
-                <option>東北</option>
-                <option>関東</option>
-                <option>中部</option>
-                <option>関西</option>
-                <option>中国</option>
-                <option>四国</option>
-                <option>九州</option>
-              </select>
-            </label>
+            <div class="field">
+              <span class="field-label">地域</span>
+              <input type="hidden" id="theaterAreaInput" value="全国">
+              <div class="region-picker" id="theaterAreaPicker" data-region-picker data-target="theaterAreaInput"></div>
+            </div>
             <button class="btn gold" type="submit">劇場を探す</button>
           </form>
 

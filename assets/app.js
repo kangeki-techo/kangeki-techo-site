@@ -2474,6 +2474,44 @@ function fillSeatSelect(select, values, placeholder, required = false, selectedV
   }
 }
 
+function ensurePostSelect(id) {
+  const current = document.querySelector(`#${id}`);
+  if (!current) return null;
+  if (current.tagName === "SELECT") return current;
+
+  const select = document.createElement("select");
+  select.id = id;
+  select.required = current.required;
+  current.replaceWith(select);
+  return select;
+}
+
+function ensurePostInput(id, placeholder, required = true) {
+  const current = document.querySelector(`#${id}`);
+  if (!current) return null;
+  if (current.tagName === "INPUT") {
+    current.type = "text";
+    current.placeholder = placeholder;
+    current.required = required;
+    return current;
+  }
+
+  const input = document.createElement("input");
+  input.id = id;
+  input.type = "text";
+  input.placeholder = placeholder;
+  input.required = required;
+  current.replaceWith(input);
+  return input;
+}
+
+function setupPostFreeInputs() {
+  ensurePostInput("postTheater", "例: ○○劇場", true);
+  ensurePostInput("postFloor", "例: 1階", true);
+  ensurePostInput("postRow", "例: 15列", true);
+  ensurePostInput("postSeat", "例: 22番", true);
+}
+
 function setupDetailSeatSelects(theaterName, selected = seatFilter) {
   const options = getSeatOptions(theaterName, selected.floor);
   fillSeatSelect(document.querySelector("#floorInput"), options.floors, "指定なし", false, selected.floor);
@@ -2482,10 +2520,18 @@ function setupDetailSeatSelects(theaterName, selected = seatFilter) {
 }
 
 function setupPostSeatSelects(theaterName, selectedFloor = "") {
+  if (isPostOtherArea()) {
+    setupPostFreeInputs();
+    return;
+  }
+
+  const floorSelect = ensurePostSelect("postFloor");
+  const rowSelect = ensurePostSelect("postRow");
+  const seatSelect = ensurePostSelect("postSeat");
   const options = getSeatOptions(theaterName, selectedFloor);
-  fillSeatSelect(document.querySelector("#postFloor"), options.floors, "選択してください", true, selectedFloor);
-  fillSeatSelect(document.querySelector("#postRow"), options.rows, "選択してください", true);
-  fillSeatSelect(document.querySelector("#postSeat"), options.seats, "選択してください", true);
+  fillSeatSelect(floorSelect, options.floors, "選択してください", true, selectedFloor);
+  fillSeatSelect(rowSelect, options.rows, "選択してください", true);
+  fillSeatSelect(seatSelect, options.seats, "選択してください", true);
 }
 
 function setupSeatSelects() {
@@ -2530,10 +2576,106 @@ function renderTheaterNameLink(theaterName) {
 }
 
 const theaterAreaOrder = ["東京", "大阪", "名古屋", "福岡", "北海道", "東北", "関東", "中部", "関西", "中国", "四国", "九州"];
+const postOtherArea = "その他";
+const regionGroups = [
+  {
+    label: "主要都市",
+    values: ["東京都", "大阪府", "愛知県", "福岡県", "北海道"]
+  },
+  {
+    label: "東北",
+    values: ["青森県", "秋田県", "岩手県", "宮城県", "山形県", "福島県"]
+  },
+  {
+    label: "関東",
+    values: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"]
+  },
+  {
+    label: "中部",
+    values: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県"]
+  },
+  {
+    label: "関西",
+    values: ["三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"]
+  },
+  {
+    label: "中国",
+    values: ["鳥取県", "島根県", "岡山県", "広島県", "山口県"]
+  },
+  {
+    label: "四国",
+    values: ["徳島県", "香川県", "愛媛県", "高知県"]
+  },
+  {
+    label: "九州",
+    values: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
+  }
+];
 
 function areaSortValue(area) {
   const index = theaterAreaOrder.indexOf(area);
   return index === -1 ? theaterAreaOrder.length : index;
+}
+
+function setupRegionPickers() {
+  document.querySelectorAll("[data-region-picker]").forEach((picker) => {
+    const input = document.querySelector(`#${picker.dataset.target}`);
+    if (!input) return;
+
+    const selectedValue = input.value || "全国";
+    picker.innerHTML = `
+      <button class="region-selected" type="button" aria-haspopup="true" aria-expanded="false">
+        <span>${selectedValue}</span>
+      </button>
+      <div class="region-menu" hidden>
+        <button class="region-option ${selectedValue === "全国" ? "active" : ""}" type="button" data-region-option data-region-value="全国">全国</button>
+        ${regionGroups.map((group) => `
+          <details class="region-group">
+            <summary>${group.label}</summary>
+            <div class="region-options">
+              ${group.values.map((value) => `<button class="region-option ${selectedValue === value ? "active" : ""}" type="button" data-region-option data-region-value="${value}">${value}</button>`).join("")}
+            </div>
+          </details>
+        `).join("")}
+      </div>
+    `;
+
+    const button = picker.querySelector(".region-selected");
+    const menu = picker.querySelector(".region-menu");
+    button.addEventListener("click", () => {
+      const willOpen = menu.hidden;
+      document.querySelectorAll("[data-region-picker]").forEach((otherPicker) => {
+        otherPicker.classList.remove("open");
+        otherPicker.querySelector(".region-menu")?.setAttribute("hidden", "");
+        otherPicker.querySelector(".region-selected")?.setAttribute("aria-expanded", "false");
+      });
+      menu.hidden = !willOpen;
+      picker.classList.toggle("open", willOpen);
+      button.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    picker.querySelectorAll("[data-region-option]").forEach((option) => {
+      option.addEventListener("click", () => {
+        input.value = option.dataset.regionValue;
+        button.querySelector("span").textContent = option.dataset.regionValue;
+        picker.querySelectorAll("[data-region-option]").forEach((item) => item.classList.remove("active"));
+        option.classList.add("active");
+        menu.hidden = true;
+        picker.classList.remove("open");
+        button.setAttribute("aria-expanded", "false");
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    });
+  });
+}
+
+function closeRegionPickers(event) {
+  if (event.target.closest("[data-region-picker]")) return;
+  document.querySelectorAll("[data-region-picker]").forEach((picker) => {
+    picker.classList.remove("open");
+    picker.querySelector(".region-menu")?.setAttribute("hidden", "");
+    picker.querySelector(".region-selected")?.setAttribute("aria-expanded", "false");
+  });
 }
 
 function getSelectedTheaterArea() {
@@ -2542,6 +2684,10 @@ function getSelectedTheaterArea() {
 
 function getPostSelectedArea() {
   return normalizeArea(document.querySelector("#postTheaterArea")?.value || theaters[0]?.area || "");
+}
+
+function isPostOtherArea() {
+  return document.querySelector("#postTheaterArea")?.value === postOtherArea;
 }
 
 function scrollToTheaterList() {
@@ -2697,14 +2843,14 @@ function renderTheaters() {
 
 function setupPostTheaterSelects() {
   const postTheaterArea = document.querySelector("#postTheaterArea");
-  const postTheater = document.querySelector("#postTheater");
-  if (!postTheaterArea || !postTheater) return;
+  if (!postTheaterArea) return;
 
   const sortedTheaters = getSortedTheaters();
   const areas = [...new Set(sortedTheaters.map((theater) => normalizeArea(theater.area)).filter(Boolean))]
     .sort((a, b) => areaSortValue(a) - areaSortValue(b) || a.localeCompare(b, "ja"));
-  const previousArea = getPostSelectedArea();
-  const previousTheater = postTheater.value;
+  areas.push(postOtherArea);
+  const previousArea = postTheaterArea.value || getPostSelectedArea();
+  const previousTheater = document.querySelector("#postTheater")?.value || "";
 
   postTheaterArea.innerHTML = "";
   areas.forEach((area) => {
@@ -2713,6 +2859,14 @@ function setupPostTheaterSelects() {
 
   const selectedArea = areas.includes(previousArea) ? previousArea : areas[0];
   postTheaterArea.value = selectedArea || "";
+
+  if (selectedArea === postOtherArea) {
+    setupPostFreeInputs();
+    return;
+  }
+
+  const postTheater = ensurePostSelect("postTheater");
+  if (!postTheater) return;
 
   const areaTheaters = sortedTheaters.filter((theater) => normalizeArea(theater.area) === selectedArea);
   postTheater.innerHTML = "";
@@ -2907,16 +3061,18 @@ function bindEvents() {
     renderDetail();
   });
 
-  document.querySelector("#postTheater")?.addEventListener("change", (event) => {
-    setupPostSeatSelects(event.target.value);
-  });
-
   document.querySelector("#postTheaterArea")?.addEventListener("change", () => {
     setupPostTheaterSelects();
   });
 
-  document.querySelector("#postFloor")?.addEventListener("change", (event) => {
-    setupPostSeatSelects(document.querySelector("#postTheater").value, event.target.value);
+  document.querySelector("#reviewForm")?.addEventListener("change", (event) => {
+    if (event.target.id === "postTheater") {
+      setupPostSeatSelects(event.target.value);
+    }
+
+    if (event.target.id === "postFloor" && !isPostOtherArea()) {
+      setupPostSeatSelects(document.querySelector("#postTheater").value, event.target.value);
+    }
   });
 
   document.querySelector("#floorInput")?.addEventListener("change", (event) => {
@@ -3017,10 +3173,13 @@ function bindEvents() {
       submitButton.textContent = "送信する";
     }
   });
+
+  document.addEventListener("click", closeRegionPickers);
 }
 
 function renderAll() {
   setupDefaultDate();
+  setupRegionPickers();
   renderPerformances();
   renderTheaters();
   setupSeatSelects();
