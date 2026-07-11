@@ -2611,6 +2611,8 @@ const regionGroups = [
     values: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
   }
 ];
+const theaterRegionOptions = ["全国", "東京", "大阪", "名古屋", "福岡", "北海道", "その他"];
+const mainTheaterAreas = theaterRegionOptions.filter((area) => area !== "全国" && area !== "その他");
 
 function areaSortValue(area) {
   const index = theaterAreaOrder.indexOf(area);
@@ -2623,11 +2625,10 @@ function setupRegionPickers() {
     if (!input) return;
 
     const selectedValue = input.value || "全国";
-    picker.innerHTML = `
-      <button class="region-selected" type="button" aria-haspopup="true" aria-expanded="false">
-        <span>${selectedValue}</span>
-      </button>
-      <div class="region-menu" hidden>
+    const isTheaterMode = picker.dataset.regionMode === "theater";
+    const menuContent = isTheaterMode
+      ? theaterRegionOptions.map((value) => `<button class="region-option ${selectedValue === value ? "active" : ""}" type="button" data-region-option data-region-value="${value}">${value}</button>`).join("")
+      : `
         <button class="region-option ${selectedValue === "全国" ? "active" : ""}" type="button" data-region-option data-region-value="全国">全国</button>
         ${regionGroups.map((group) => `
           <details class="region-group">
@@ -2637,6 +2638,13 @@ function setupRegionPickers() {
             </div>
           </details>
         `).join("")}
+      `;
+    picker.innerHTML = `
+      <button class="region-selected" type="button" aria-haspopup="true" aria-expanded="false">
+        <span>${selectedValue}</span>
+      </button>
+      <div class="region-menu" hidden>
+        ${menuContent}
       </div>
     `;
 
@@ -2806,7 +2814,9 @@ function renderTheaters() {
   const sortedTheaters = getSortedTheaters();
   const displayTheaters = selectedArea === "全国"
     ? sortedTheaters
-    : sortedTheaters.filter((theater) => normalizeArea(theater.area) === selectedArea);
+    : selectedArea === "その他"
+      ? sortedTheaters.filter((theater) => !mainTheaterAreas.includes(normalizeArea(theater.area)))
+      : sortedTheaters.filter((theater) => normalizeArea(theater.area) === selectedArea);
 
   if (theaterList && !displayTheaters.length) {
     theaterList.innerHTML = `<div class="empty wide">選択した地域の劇場はまだ登録されていません。</div>`;
