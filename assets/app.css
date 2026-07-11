@@ -545,7 +545,7 @@
 
     .region-options .region-option {
       min-height: 36px;
-      color: var(--muted);
+      color: var(--ink);
       font-weight: 600;
     }
 
