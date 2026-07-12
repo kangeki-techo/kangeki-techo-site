@@ -2574,15 +2574,24 @@ function getOtherTheater() {
 }
 
 function getReviewCountForTheater(theaterName) {
+  if (isOtherTheaterName(theaterName)) {
+    return reviews.filter((review) => isOtherReviewTheater(review.theater)).length;
+  }
+
   const theaterKey = normalizeTheaterName(theaterName);
   return reviewCounts[theaterKey] ?? reviews.filter((review) => normalizeTheaterName(review.theater) === theaterKey).length;
 }
 
-function renderTheaterCard(theaterName) {
+function isOtherReviewTheater(theaterName) {
+  const normalized = normalizeTheaterName(theaterName);
+  return Boolean(normalized) && (normalized === normalizeTheaterName(postOtherArea) || !theaterExists(theaterName));
+}
+
+function renderTheaterCard(theaterName, displayName = theaterName) {
   const count = getReviewCountForTheater(theaterName);
   return `
     <a class="card theater-card" href="${theaterReviewUrl(theaterName)}">
-      <h3>${renderTheaterCardName(theaterName)}</h3>
+      <h3>${renderTheaterCardName(displayName)}</h3>
       <div class="theater-card-footer">
         <span class="theater-review-count">${count}件のレビュー</span>
         <span class="theater-card-link">詳細を見る →</span>
@@ -2877,7 +2886,8 @@ function renderTheaters() {
 
   const hasOtherTheaterCard = displayTheaters.some((theater) => isOtherTheaterName(theater.name));
   if (theaterList && !hasOtherTheaterCard && (selectedArea === "全国" || selectedArea === "その他")) {
-    theaterList.insertAdjacentHTML("beforeend", renderTheaterCard(postOtherArea));
+    theaterList.insertAdjacentHTML("beforeend", `<h3 class="area-heading" data-area="${postOtherArea}">${postOtherArea}</h3>`);
+    theaterList.insertAdjacentHTML("beforeend", renderTheaterCard(postOtherArea, "その他劇場"));
   }
 
   setupPostTheaterSelects();
@@ -2925,7 +2935,9 @@ function setupPostTheaterSelects() {
 
 function getVisibleReviews() {
   return reviews
-    .filter((review) => normalizeTheaterName(review.theater) === normalizeTheaterName(selectedTheater))
+    .filter((review) => isOtherTheaterName(selectedTheater)
+      ? isOtherReviewTheater(review.theater)
+      : normalizeTheaterName(review.theater) === normalizeTheaterName(selectedTheater))
     .filter((review) => !seatFilter.floor || review.floor === seatFilter.floor)
     .filter((review) => !seatFilter.row || review.row === seatFilter.row)
     .filter((review) => !seatFilter.seat || review.seat === seatFilter.seat)
