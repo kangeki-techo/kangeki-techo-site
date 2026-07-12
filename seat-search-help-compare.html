@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>座席検索 説明文比較 | 観劇手帖</title>
+  <link rel="stylesheet" href="assets/app.css">
+  <style>
+    .compare-page {
+      padding-top: 86px;
+    }
+
+    .compare-layout {
+      display: grid;
+      gap: 28px;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .compare-card {
+      padding: 24px;
+      background: rgba(255, 252, 245, 0.98);
+      border: 1px solid rgba(157, 31, 37, 0.28);
+      border-radius: 8px;
+    }
+
+    .compare-title {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 1.35rem;
+    }
+
+    .compare-note {
+      margin: 0 0 16px;
+      color: #6f6962;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      line-height: 1.8;
+    }
+
+    .compare-search {
+      margin-bottom: 0;
+    }
+
+    .help-bottom {
+      grid-column: 1 / -1;
+      order: 10;
+    }
+
+    .help-black {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .help-match {
+      color: #4b4742;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    @media (max-width: 760px) {
+      .compare-page {
+        padding-top: 72px;
+      }
+
+      .compare-card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="観劇手帖 ホーム">
+      <span class="brand-mark" aria-hidden="true">観</span>
+      <span class="brand-copy">
+        <span class="brand-en">KANGEKI TECHO</span>
+        <span class="brand-ja">観劇手帖</span>
+      </span>
+    </a>
+    <nav class="site-nav" aria-label="メインメニュー">
+      <a href="index.html">公演検索</a>
+      <a class="active" href="reviews.html">座席レビュー</a>
+      <a href="post.html">レビュー投稿</a>
+      <a href="contact.html">お問い合わせ</a>
+    </nav>
+  </header>
+
+  <main class="page compare-page">
+    <section class="content-card compare-layout">
+      <div>
+        <p class="section-kicker">Seat Search Text</p>
+        <h1>座席検索 説明文比較</h1>
+        <p class="lead">説明文の位置と文字の見え方を比べるためのページです。</p>
+      </div>
+
+      <article class="compare-card">
+        <h2 class="compare-title">案A：検索機能の上に配置</h2>
+        <p class="compare-note">今の配置に近い案です。検索前に説明が目に入るので、使い方は伝わりやすいです。</p>
+        <form class="search-small compare-search">
+          <p class="seat-search-help help-black">「階」「列」「番」のうち、1項目以上を選択して座席を検索できます。</p>
+          <label>
+            階
+            <select>
+              <option>指定なし</option>
+              <option>1階</option>
+              <option>2階</option>
+            </select>
+          </label>
+          <label>
+            列
+            <select>
+              <option>指定なし</option>
+              <option>15列</option>
+              <option>3列</option>
+            </select>
+          </label>
+          <label>
+            番
+            <select>
+              <option>指定なし</option>
+              <option>22番</option>
+              <option>14番</option>
+            </select>
+          </label>
+          <button class="btn" type="button">座席検索</button>
+        </form>
+      </article>
+
+      <article class="compare-card">
+        <h2 class="compare-title">案B：検索機能の下に配置</h2>
+        <p class="compare-note">先に選択欄が見える案です。説明文は補足として読めるので、画面が少しすっきりします。</p>
+        <form class="search-small compare-search">
+          <label>
+            階
+            <select>
+              <option>指定なし</option>
+              <option>1階</option>
+              <option>2階</option>
+            </select>
+          </label>
+          <label>
+            列
+            <select>
+              <option>指定なし</option>
+              <option>15列</option>
+              <option>3列</option>
+            </select>
+          </label>
+          <label>
+            番
+            <select>
+              <option>指定なし</option>
+              <option>22番</option>
+              <option>14番</option>
+            </select>
+          </label>
+          <button class="btn" type="button">座席検索</button>
+          <p class="seat-search-help help-bottom help-black">「階」「列」「番」のうち、1項目以上を選択して座席を検索できます。</p>
+        </form>
+      </article>
+
+      <article class="compare-card">
+        <h2 class="compare-title">案C：検索機能の下に配置・周囲に合わせた文字</h2>
+        <p class="compare-note">配置は案Bと同じで、文字を少し太く、色を柔らかい黒寄りにした案です。個人的にはこの案が一番なじみやすいです。</p>
+        <form class="search-small compare-search">
+          <label>
+            階
+            <select>
+              <option>指定なし</option>
+              <option>1階</option>
+              <option>2階</option>
+            </select>
+          </label>
+          <label>
+            列
+            <select>
+              <option>指定なし</option>
+              <option>15列</option>
+              <option>3列</option>
+            </select>
+          </label>
+          <label>
+            番
+            <select>
+              <option>指定なし</option>
+              <option>22番</option>
+              <option>14番</option>
+            </select>
+          </label>
+          <button class="btn" type="button">座席検索</button>
+          <p class="seat-search-help help-bottom help-match">「階」「列」「番」のうち、1項目以上を選択して座席を検索できます。</p>
+        </form>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
