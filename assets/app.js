@@ -1967,10 +1967,12 @@ const baseReviews = [];
 
 const storageKey = "kangekiTechoReviews";
 const dataCacheKey = "kangekiTechoDataCacheV4";
+const reviewPageSize = 5;
 let reviews = [...baseReviews, ...loadSavedReviews()];
 let selectedTheater = getQuery("theater") || theaters[0]?.name || "";
 let seatFilter = { floor: "", row: "", seat: "" };
 let reviewKeyword = "";
+let visibleReviewCount = reviewPageSize;
 let dataReady = false;
 let reviewCounts = {};
 
@@ -2969,10 +2971,15 @@ function setOtherDetailMode(enabled) {
   document.querySelector("#otherKeywordSearch")?.toggleAttribute("hidden", !enabled);
 }
 
+function resetReviewDisplayCount() {
+  visibleReviewCount = reviewPageSize;
+}
+
 function renderReviewList(visibleReviews, emptyMessage) {
   const reviewList = document.querySelector("#reviewList");
   if (!reviewList) return;
 
+  document.querySelector("#loadMoreReviewsWrap")?.remove();
   reviewList.innerHTML = "";
 
   if (!visibleReviews.length) {
@@ -2980,7 +2987,9 @@ function renderReviewList(visibleReviews, emptyMessage) {
     return;
   }
 
-  visibleReviews.forEach((review) => {
+  const displayedReviews = visibleReviews.slice(0, visibleReviewCount);
+
+  displayedReviews.forEach((review) => {
     reviewList.insertAdjacentHTML("beforeend", `
       <article class="review-item">
         <div class="review-head">
@@ -2999,6 +3008,14 @@ function renderReviewList(visibleReviews, emptyMessage) {
       </article>
     `);
   });
+
+  if (visibleReviewCount < visibleReviews.length) {
+    reviewList.insertAdjacentHTML("afterend", `
+      <div class="load-more-wrap" id="loadMoreReviewsWrap">
+        <button class="btn subtle load-more-button" id="loadMoreReviews" type="button">もっと見る</button>
+      </div>
+    `);
+  }
 }
 
 function renderDetail() {
@@ -3149,6 +3166,7 @@ function bindEvents() {
       row: document.querySelector("#rowInput").value,
       seat: document.querySelector("#seatInput").value
     };
+    resetReviewDisplayCount();
     renderDetail();
     scrollToReviewStats();
   });
@@ -3156,8 +3174,15 @@ function bindEvents() {
   document.querySelector("#otherKeywordSearch")?.addEventListener("submit", (event) => {
     event.preventDefault();
     reviewKeyword = document.querySelector("#otherKeywordInput")?.value.trim() || "";
+    resetReviewDisplayCount();
     renderDetail();
     document.querySelector("#reviewMeta")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.querySelector("#theaterDetail")?.addEventListener("click", (event) => {
+    if (!event.target.closest("#loadMoreReviews")) return;
+    visibleReviewCount += reviewPageSize;
+    renderDetail();
   });
 
   document.querySelector("#theaterList")?.addEventListener("click", (event) => {
@@ -3165,6 +3190,7 @@ function bindEvents() {
     if (!card) return;
     selectedTheater = card.dataset.theater;
     seatFilter = { floor: "", row: "", seat: "" };
+    resetReviewDisplayCount();
     document.querySelector("#floorInput").value = "";
     document.querySelector("#rowInput").value = "";
     document.querySelector("#seatInput").value = "";

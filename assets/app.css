@@ -1089,6 +1089,16 @@
       gap: 14px;
     }
 
+    .load-more-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 18px 0 0;
+    }
+
+    .load-more-button {
+      min-width: 150px;
+    }
+
     .bottom-back-link {
       margin: 22px 0 0;
     }
