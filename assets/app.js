@@ -2135,7 +2135,9 @@ function applyRemoteData(data) {
   const requestedTheater = getQuery("theater");
   const requestedMatch = getTheaterByName(requestedTheater);
   const selectedMatch = getTheaterByName(selectedTheater);
-  if (requestedMatch) {
+  if (isOtherTheaterName(requestedTheater) || isOtherTheaterName(selectedTheater)) {
+    selectedTheater = postOtherArea;
+  } else if (requestedMatch) {
     selectedTheater = requestedMatch.name;
   } else if (!selectedMatch) {
     selectedTheater = theaters[0]?.name || "";
@@ -2554,6 +2556,41 @@ function theaterExists(theaterName) {
   return Boolean(getTheaterByName(theaterName));
 }
 
+function isOtherTheaterName(theaterName) {
+  return normalizeTheaterName(theaterName) === normalizeTheaterName(postOtherArea);
+}
+
+function getOtherTheater() {
+  return {
+    id: "other",
+    name: postOtherArea,
+    area: postOtherArea,
+    address: "-",
+    access: "-",
+    capacity: "-",
+    officialUrl: "",
+    seatMapUrl: ""
+  };
+}
+
+function getReviewCountForTheater(theaterName) {
+  const theaterKey = normalizeTheaterName(theaterName);
+  return reviewCounts[theaterKey] ?? reviews.filter((review) => normalizeTheaterName(review.theater) === theaterKey).length;
+}
+
+function renderTheaterCard(theaterName) {
+  const count = getReviewCountForTheater(theaterName);
+  return `
+    <a class="card theater-card" href="${theaterReviewUrl(theaterName)}">
+      <h3>${renderTheaterCardName(theaterName)}</h3>
+      <div class="theater-card-footer">
+        <span class="theater-review-count">${count}件のレビュー</span>
+        <span class="theater-card-link">詳細を見る →</span>
+      </div>
+    </a>
+  `;
+}
+
 function renderTheaterCardName(theaterName) {
   if (theaterName === "梅田芸術劇場メインホール") {
     return `梅田芸術劇場<br class="pc-name-break">メインホール`;
@@ -2818,7 +2855,7 @@ function renderTheaters() {
       ? sortedTheaters.filter((theater) => !mainTheaterAreas.includes(normalizeArea(theater.area)))
       : sortedTheaters.filter((theater) => normalizeArea(theater.area) === selectedArea);
 
-  if (theaterList && !displayTheaters.length) {
+  if (theaterList && !displayTheaters.length && selectedArea !== "その他") {
     theaterList.innerHTML = `<div class="empty wide">選択した地域の劇場はまだ登録されていません。</div>`;
   }
 
@@ -2834,19 +2871,14 @@ function renderTheaters() {
     .forEach((area) => {
       theaterList?.insertAdjacentHTML("beforeend", `<h3 class="area-heading" data-area="${area}">${area}</h3>`);
       groupedTheaters[area].forEach((theater) => {
-        const theaterKey = normalizeTheaterName(theater.name);
-        const count = reviewCounts[theaterKey] ?? reviews.filter((review) => normalizeTheaterName(review.theater) === theaterKey).length;
-        theaterList?.insertAdjacentHTML("beforeend", `
-          <a class="card theater-card" href="${theaterReviewUrl(theater.name)}">
-            <h3>${renderTheaterCardName(theater.name)}</h3>
-            <div class="theater-card-footer">
-              <span class="theater-review-count">${count}件のレビュー</span>
-              <span class="theater-card-link">詳細を見る →</span>
-            </div>
-          </a>
-        `);
+        theaterList?.insertAdjacentHTML("beforeend", renderTheaterCard(theater.name));
       });
     });
+
+  const hasOtherTheaterCard = displayTheaters.some((theater) => isOtherTheaterName(theater.name));
+  if (theaterList && !hasOtherTheaterCard && (selectedArea === "全国" || selectedArea === "その他")) {
+    theaterList.insertAdjacentHTML("beforeend", renderTheaterCard(postOtherArea));
+  }
 
   setupPostTheaterSelects();
 }
@@ -2893,7 +2925,7 @@ function setupPostTheaterSelects() {
 
 function getVisibleReviews() {
   return reviews
-    .filter((review) => review.theater === selectedTheater)
+    .filter((review) => normalizeTheaterName(review.theater) === normalizeTheaterName(selectedTheater))
     .filter((review) => !seatFilter.floor || review.floor === seatFilter.floor)
     .filter((review) => !seatFilter.row || review.row === seatFilter.row)
     .filter((review) => !seatFilter.seat || review.seat === seatFilter.seat)
@@ -2904,7 +2936,10 @@ function renderDetail() {
   const detailName = document.querySelector("#detailName");
   if (!detailName) return;
 
-  const theater = getTheaterByName(selectedTheater) || (!getQuery("theater") ? theaters[0] : null);
+  const requestedOther = isOtherTheaterName(selectedTheater) || isOtherTheaterName(getQuery("theater"));
+  const theater = requestedOther
+    ? getOtherTheater()
+    : getTheaterByName(selectedTheater) || (!getQuery("theater") ? theaters[0] : null);
   if (!theater) {
     detailName.textContent = "劇場情報が未登録です";
     const heroName = document.querySelector("#theaterHeroName");
