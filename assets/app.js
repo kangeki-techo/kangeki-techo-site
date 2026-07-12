@@ -1970,6 +1970,7 @@ const dataCacheKey = "kangekiTechoDataCacheV4";
 let reviews = [...baseReviews, ...loadSavedReviews()];
 let selectedTheater = getQuery("theater") || theaters[0]?.name || "";
 let seatFilter = { floor: "", row: "", seat: "" };
+let reviewKeyword = "";
 let dataReady = false;
 let reviewCounts = {};
 
@@ -2941,7 +2942,63 @@ function getVisibleReviews() {
     .filter((review) => !seatFilter.floor || review.floor === seatFilter.floor)
     .filter((review) => !seatFilter.row || review.row === seatFilter.row)
     .filter((review) => !seatFilter.seat || review.seat === seatFilter.seat)
+    .filter((review) => matchesReviewKeyword(review, reviewKeyword))
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+function matchesReviewKeyword(review, keyword) {
+  const normalizedKeyword = String(keyword || "").trim().toLowerCase();
+  if (!normalizedKeyword) return true;
+
+  return [
+    review.theater,
+    review.showTitle,
+    review.floor,
+    review.row,
+    review.seat,
+    review.comment,
+    review.createdAt,
+    review.height
+  ].some((value) => String(value || "").toLowerCase().includes(normalizedKeyword));
+}
+
+function setOtherDetailMode(enabled) {
+  document.querySelector(".detail-grid")?.toggleAttribute("hidden", enabled);
+  document.querySelector("#seatSearch")?.toggleAttribute("hidden", enabled);
+  document.querySelector("#stats")?.toggleAttribute("hidden", enabled);
+  document.querySelector("#otherKeywordSearch")?.toggleAttribute("hidden", !enabled);
+}
+
+function renderReviewList(visibleReviews, emptyMessage) {
+  const reviewList = document.querySelector("#reviewList");
+  if (!reviewList) return;
+
+  reviewList.innerHTML = "";
+
+  if (!visibleReviews.length) {
+    reviewList.innerHTML = `<div class="empty">${emptyMessage}</div>`;
+    return;
+  }
+
+  visibleReviews.forEach((review) => {
+    reviewList.insertAdjacentHTML("beforeend", `
+      <article class="review-item">
+        <div class="review-head">
+          <div>
+            <div class="seat-name">${review.floor}${review.row}${review.seat}</div>
+            <div class="review-meta">観劇作品：${review.showTitle}</div>
+          </div>
+        </div>
+        <div class="rating-row">
+          <span class="pill">見え方 <span class="stars">${stars(review.visibility)}</span></span>
+          <span class="pill">音響 <span class="stars">${stars(review.sound)}</span></span>
+          <span class="pill">おすすめ <span class="stars">${stars(review.recommendation)}</span></span>
+        </div>
+        ${review.comment ? `<span class="comment-label">コメント</span><p>${review.comment}</p>` : ""}
+        <div class="review-meta">${reviewPersonMeta(review)} / 投稿日：${review.createdAt}</div>
+      </article>
+    `);
+  });
 }
 
 function renderDetail() {
@@ -2953,6 +3010,7 @@ function renderDetail() {
     ? getOtherTheater()
     : getTheaterByName(selectedTheater) || (!getQuery("theater") ? theaters[0] : null);
   if (!theater) {
+    setOtherDetailMode(false);
     detailName.textContent = "劇場情報が未登録です";
     const heroName = document.querySelector("#theaterHeroName");
     if (heroName) heroName.textContent = "劇場情報";
@@ -2981,12 +3039,30 @@ function renderDetail() {
     return;
   }
   selectedTheater = theater.name;
+  if (!requestedOther) reviewKeyword = "";
   const visibleReviews = getVisibleReviews();
-  setupDetailSeatSelects(theater.name);
+  setOtherDetailMode(requestedOther);
 
   detailName.textContent = theater.name;
   const heroName = document.querySelector("#theaterHeroName");
-  if (heroName) heroName.innerHTML = renderTheaterCardName(theater.name);
+  if (heroName) heroName.innerHTML = requestedOther ? "その他劇場" : renderTheaterCardName(theater.name);
+
+  if (requestedOther) {
+    const keywordInput = document.querySelector("#otherKeywordInput");
+    if (keywordInput) keywordInput.value = reviewKeyword;
+    document.querySelector("#reviewMeta").textContent = reviewKeyword
+      ? `その他劇場 / 「${reviewKeyword}」：${visibleReviews.length}件`
+      : `その他劇場：すべてのレビュー ${visibleReviews.length}件`;
+    renderReviewList(
+      visibleReviews,
+      reviewKeyword
+        ? "条件に合うレビューがありません。キーワードを変えて検索してください。"
+        : "その他劇場のレビューはまだありません。"
+    );
+    return;
+  }
+
+  setupDetailSeatSelects(theater.name);
   document.querySelector("#detailAddress").textContent = theater.address;
   document.querySelector("#detailAccess").textContent = theater.access;
   document.querySelector("#detailCapacity").textContent = theater.capacity;
@@ -3029,33 +3105,7 @@ function renderDetail() {
     ? `${selectedTheater} / ${filterText}：${visibleReviews.length}件`
     : `${selectedTheater}：すべてのレビュー ${visibleReviews.length}件`;
 
-  const reviewList = document.querySelector("#reviewList");
-  reviewList.innerHTML = "";
-
-  if (!visibleReviews.length) {
-    reviewList.innerHTML = `<div class="empty">条件に合うレビューがありません。座席条件を減らして検索してください。</div>`;
-    return;
-  }
-
-  visibleReviews.forEach((review) => {
-    reviewList.insertAdjacentHTML("beforeend", `
-      <article class="review-item">
-        <div class="review-head">
-          <div>
-            <div class="seat-name">${review.floor}${review.row}${review.seat}</div>
-            <div class="review-meta">観劇作品：${review.showTitle}</div>
-          </div>
-        </div>
-        <div class="rating-row">
-          <span class="pill">見え方 <span class="stars">${stars(review.visibility)}</span></span>
-          <span class="pill">音響 <span class="stars">${stars(review.sound)}</span></span>
-          <span class="pill">おすすめ <span class="stars">${stars(review.recommendation)}</span></span>
-        </div>
-        ${review.comment ? `<span class="comment-label">コメント</span><p>${review.comment}</p>` : ""}
-        <div class="review-meta">${reviewPersonMeta(review)} / 投稿日：${review.createdAt}</div>
-      </article>
-    `);
-  });
+  renderReviewList(visibleReviews, "条件に合うレビューがありません。座席条件を減らして検索してください。");
 }
 
 function updateCommentRequirement() {
@@ -3101,6 +3151,13 @@ function bindEvents() {
     };
     renderDetail();
     scrollToReviewStats();
+  });
+
+  document.querySelector("#otherKeywordSearch")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    reviewKeyword = document.querySelector("#otherKeywordInput")?.value.trim() || "";
+    renderDetail();
+    document.querySelector("#reviewMeta")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   document.querySelector("#theaterList")?.addEventListener("click", (event) => {
