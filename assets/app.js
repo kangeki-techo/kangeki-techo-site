@@ -2383,6 +2383,93 @@ function getQuery(key) {
   return typeof value === "string" ? value.trim() : value;
 }
 
+function setMetaContent(selector, content) {
+  const element = document.querySelector(selector);
+  if (element) element.setAttribute("content", content);
+}
+
+function updateTheaterBreadcrumbStructuredData(theaterName, canonicalUrl) {
+  const element = document.querySelector("#breadcrumbStructuredData");
+  if (!element) return;
+
+  const displayName = String(theaterName || "").trim() || "劇場詳細";
+  element.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "ホーム",
+        item: "https://kangeki-techo.jp/"
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "座席レビュー",
+        item: "https://kangeki-techo.jp/reviews.html"
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: displayName,
+        item: canonicalUrl
+      }
+    ]
+  });
+}
+
+function updateTheaterSeo(theaterName) {
+  const name = String(theaterName || "").trim();
+  const registeredTheater = name && !isOtherTheaterName(name) ? getTheaterByName(name) : null;
+  const isIndexable = Boolean(registeredTheater);
+  const displayName = isIndexable ? registeredTheater.name : "";
+  const genericDescription = "劇場情報と座席レビューを確認できます。劇場一覧から劇場を選択して、座席ごとの見え方、音響、おすすめ度をご覧ください。";
+  const title = isIndexable
+    ? `${displayName}の座席の見え方｜レビュー・音響・おすすめ度｜観劇手帖`
+    : "劇場詳細・座席レビュー｜観劇手帖";
+  const description = isIndexable
+    ? `${displayName}の座席からの見え方、音響、おすすめ度を掲載。階・列・番から座席を検索し、実際に観劇した人のレビューや身長、観劇作品を確認できます。`
+    : genericDescription;
+  const socialTitle = isIndexable
+    ? `観劇手帖｜${displayName}の座席の見え方・レビュー`
+    : "観劇手帖｜劇場詳細・座席レビュー";
+  const socialDescription = isIndexable
+    ? `${displayName}の座席からの見え方、音響、おすすめ度を、階・列・番ごとの観劇者レビューで確認できます。`
+    : genericDescription;
+  const canonicalUrl = isIndexable
+    ? `https://kangeki-techo.jp/theater.html?theater=${encodeURIComponent(displayName)}`
+    : "https://kangeki-techo.jp/theater.html";
+
+  document.title = title;
+  setMetaContent('meta[name="description"]', description);
+  setMetaContent('meta[name="robots"]', isIndexable ? "index,follow" : "noindex,follow");
+  setMetaContent('meta[property="og:title"]', socialTitle);
+  setMetaContent('meta[property="og:description"]', socialDescription);
+  setMetaContent('meta[property="og:url"]', canonicalUrl);
+  setMetaContent('meta[name="twitter:title"]', socialTitle);
+  setMetaContent('meta[name="twitter:description"]', socialDescription);
+
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.href = canonicalUrl;
+
+  const heroName = document.querySelector("#theaterHeroName");
+  const heroCopy = document.querySelector("#theaterHeroCopy");
+  if (heroName) {
+    if (isIndexable) {
+      heroName.innerHTML = `${renderTheaterCardName(displayName)}の座席の見え方・レビュー`;
+    } else {
+      heroName.textContent = "劇場詳細・座席レビュー";
+    }
+  }
+  if (heroCopy) heroCopy.textContent = isIndexable ? socialDescription : genericDescription;
+
+  updateTheaterBreadcrumbStructuredData(
+    isIndexable ? displayName : "劇場詳細・座席レビュー",
+    canonicalUrl
+  );
+}
+
 function stars(value) {
   return "★★★★★".slice(0, value) + "☆☆☆☆☆".slice(0, 5 - value);
 }
@@ -3022,15 +3109,15 @@ function renderDetail() {
   const detailName = document.querySelector("#detailName");
   if (!detailName) return;
 
-  const requestedOther = isOtherTheaterName(selectedTheater) || isOtherTheaterName(getQuery("theater"));
+  const requestedName = String(getQuery("theater") || "").trim();
+  const requestedOther = isOtherTheaterName(requestedName);
   const theater = requestedOther
     ? getOtherTheater()
-    : getTheaterByName(selectedTheater) || (!getQuery("theater") ? theaters[0] : null);
+    : getTheaterByName(requestedName);
   if (!theater) {
     setOtherDetailMode(false);
+    updateTheaterSeo("");
     detailName.textContent = "劇場情報が未登録です";
-    const heroName = document.querySelector("#theaterHeroName");
-    if (heroName) heroName.textContent = "劇場情報";
     document.querySelector("#detailAddress").textContent = "-";
     document.querySelector("#detailAccess").textContent = "-";
     document.querySelector("#detailCapacity").textContent = "-";
@@ -3056,13 +3143,12 @@ function renderDetail() {
     return;
   }
   selectedTheater = theater.name;
+  updateTheaterSeo(theater.name);
   if (!requestedOther) reviewKeyword = "";
   const visibleReviews = getVisibleReviews();
   setOtherDetailMode(requestedOther);
 
   detailName.textContent = theater.name;
-  const heroName = document.querySelector("#theaterHeroName");
-  if (heroName) heroName.innerHTML = requestedOther ? "その他劇場" : renderTheaterCardName(theater.name);
 
   if (requestedOther) {
     const keywordInput = document.querySelector("#otherKeywordInput");
