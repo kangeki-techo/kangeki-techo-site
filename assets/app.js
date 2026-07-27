@@ -2597,7 +2597,7 @@ function renderTheaterCard(theaterName, displayName = theaterName) {
       <h3>${renderTheaterCardName(displayName)}</h3>
       <div class="theater-card-footer">
         <span class="theater-review-count">${count}件のレビュー</span>
-        <span class="theater-card-link">詳細を見る →</span>
+        <span class="theater-card-link">座席レビューを見る →</span>
       </div>
     </a>
   `;
