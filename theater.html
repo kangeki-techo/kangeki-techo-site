@@ -51,6 +51,15 @@
     }
   </script>
   <link rel="stylesheet" href="assets/app.css">
+  <style>
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sidebar[hidden] {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -103,7 +112,7 @@
                   <dt>公式サイト</dt>
                   <dd><a class="theater-link" id="detailOfficialUrl" href="#" target="_blank" rel="noopener noreferrer">公式サイトを見る</a></dd>
                   <dt>座席表</dt>
-                  <dd><a class="theater-link" id="detailSeatMapUrl" href="#" target="_blank" rel="noopener noreferrer">公式サイトで座席表を見る</a></dd>
+                  <dd><a class="theater-link" id="detailSeatMapUrl" href="#" target="_blank" rel="noopener noreferrer">公式の座席表を見る</a></dd>
                 </dl>
               </div>
             </div>
@@ -141,7 +150,7 @@
           </article>
         </div>
 
-        <aside class="sidebar" aria-label="補足情報">
+        <aside class="sidebar" aria-label="補足情報" hidden>
           <div class="note">劇場詳細ページは「シアタークリエ 座席 見え方」のような検索にも強くしやすい構成です。</div>
         </aside>
       </div>
@@ -156,6 +165,8 @@
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/review-safety.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/additional-fixes.js"></script>
 </body>
 </html>

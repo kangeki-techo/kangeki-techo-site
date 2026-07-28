@@ -88,7 +88,7 @@
             </label>
             <label>
               身長（cm）
-              <input id="postHeight" type="number" min="100" max="220" inputmode="numeric" value="160" placeholder="例: 160">
+              <input id="postHeight" type="number" min="100" max="220" inputmode="numeric" required placeholder="例：160">
             </label>
           </div>
           <div class="three-col">
@@ -108,7 +108,8 @@
           <div class="three-col">
             <label>
               見え方評価
-              <select id="postVisibility">
+              <select id="postVisibility" required>
+                <option value="" disabled selected>選択してください</option>
                 <option value="5">★★★★★</option>
                 <option value="4">★★★★</option>
                 <option value="3">★★★</option>
@@ -118,7 +119,8 @@
             </label>
             <label>
               音響評価
-              <select id="postSound">
+              <select id="postSound" required>
+                <option value="" disabled selected>選択してください</option>
                 <option value="5">★★★★★</option>
                 <option value="4">★★★★</option>
                 <option value="3">★★★</option>
@@ -128,7 +130,8 @@
             </label>
             <label>
               おすすめ度
-              <select id="postRecommendation">
+              <select id="postRecommendation" required>
+                <option value="" disabled selected>選択してください</option>
                 <option value="5">★★★★★</option>
                 <option value="4">★★★★</option>
                 <option value="3">★★★</option>
@@ -158,5 +161,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="assets/app.js"></script>
+  <script src="assets/additional-fixes.js"></script>
 </body>
 </html>

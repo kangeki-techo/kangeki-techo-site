@@ -11,20 +11,29 @@
   </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>劇場・座席レビューを検索｜見え方・音響・おすすめ度｜観劇手帖</title>
+  <title>劇場の座席レビューを検索｜見え方・音響・おすすめ度｜観劇手帖</title>
   <meta name="description" content="全国の劇場から座席レビューを検索できます。座席ごとの見え方、音響、おすすめ度、観劇作品やコメントを確認し、チケット選びに役立てられます。">
   <link rel="canonical" href="https://kangeki-techo.jp/reviews.html">
   <meta name="robots" content="index, follow">
   <meta property="og:site_name" content="観劇手帖">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:title" content="劇場・座席レビューを検索｜観劇手帖">
+  <meta property="og:title" content="劇場の座席レビューを検索｜観劇手帖">
   <meta property="og:description" content="全国の劇場から座席レビューを検索できます。座席ごとの見え方、音響、おすすめ度、観劇作品やコメントを確認し、チケット選びに役立てられます。">
   <meta property="og:url" content="https://kangeki-techo.jp/reviews.html">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="劇場・座席レビューを検索｜観劇手帖">
+  <meta name="twitter:title" content="劇場の座席レビューを検索｜観劇手帖">
   <meta name="twitter:description" content="全国の劇場から座席レビューを検索できます。座席ごとの見え方、音響、おすすめ度、観劇作品やコメントを確認し、チケット選びに役立てられます。">
   <link rel="stylesheet" href="assets/app.css">
+  <style>
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sidebar[hidden] {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -64,7 +73,7 @@
             <div class="section-title">
               <span>Theaters</span>
               <h2 id="reviewsTitle">劇場一覧</h2>
-              <p>劇場数が増えても探しやすいよう、一覧ページと劇場詳細ページを分けています。</p>
+              <p>地域から劇場を選び、座席ごとの見え方・音響・おすすめ度を確認できます。</p>
             </div>
           </div>
 
@@ -80,7 +89,7 @@
           <div class="theater-list" id="theaterList"></div>
         </div>
 
-        <aside class="sidebar" aria-label="補足情報">
+        <aside class="sidebar" aria-label="補足情報" hidden>
           <div class="note">将来はここに劇場エリアやレビュー数での絞り込みを追加できます。</div>
         </aside>
       </div>
