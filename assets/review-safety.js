@@ -1,46 +1,61 @@
 (() => {
   const nativeInsertAdjacentHTML = Element.prototype.insertAdjacentHTML;
-  const allowedTags = new Set(["ARTICLE", "DIV", "SPAN", "P"]);
-  const allowedClasses = new Set([
-    "review-item",
-    "review-head",
-    "seat-name",
-    "review-meta",
-    "rating-row",
-    "pill",
-    "stars",
-    "comment-label"
-  ]);
 
-  const sanitizeChildren = (parent) => {
-    [...parent.childNodes].forEach((child) => {
-      if (child.nodeType === Node.TEXT_NODE) return;
+  const createElement = (tagName, className, text = "") => {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    element.textContent = text;
+    return element;
+  };
 
-      if (child.nodeType !== Node.ELEMENT_NODE) {
-        child.remove();
-        return;
-      }
+  const buildSafeReviewItem = (html) => {
+    const template = document.createElement("template");
+    template.innerHTML = String(html);
 
-      if (!allowedTags.has(child.tagName)) {
-        child.replaceWith(document.createTextNode(child.outerHTML));
-        return;
-      }
+    const source = template.content.querySelector("article.review-item");
+    if (!source) return null;
 
-      [...child.attributes].forEach((attribute) => {
-        if (attribute.name !== "class") child.removeAttribute(attribute.name);
-      });
+    const article = createElement("article", "review-item");
+    const head = createElement("div", "review-head");
+    const headInner = document.createElement("div");
+    const seatName = createElement("div", "seat-name", source.querySelector(".seat-name")?.textContent || "");
+    const sourceMeta = [...source.querySelectorAll(".review-meta")];
+    const showMeta = createElement("div", "review-meta", sourceMeta[0]?.textContent || "");
 
-      if (child.hasAttribute("class")) {
-        const safeClasses = [...child.classList].filter((className) => allowedClasses.has(className));
-        if (safeClasses.length) {
-          child.className = safeClasses.join(" ");
-        } else {
-          child.removeAttribute("class");
-        }
-      }
+    headInner.append(seatName, showMeta);
+    head.append(headInner);
+    article.append(head);
 
-      sanitizeChildren(child);
+    const ratingRow = createElement("div", "rating-row");
+    source.querySelectorAll(".rating-row .pill").forEach((sourcePill) => {
+      const sourceStars = sourcePill.querySelector(".stars");
+      const label = [...sourcePill.childNodes]
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.nodeValue)
+        .join(" ")
+        .trim();
+      const pill = createElement("span", "pill");
+      pill.append(document.createTextNode(`${label} `));
+      pill.append(createElement("span", "stars", sourceStars?.textContent || ""));
+      ratingRow.append(pill);
     });
+    article.append(ratingRow);
+
+    const sourceCommentLabel = source.querySelector(".comment-label");
+    const sourceComment = sourceCommentLabel?.nextElementSibling?.tagName === "P"
+      ? sourceCommentLabel.nextElementSibling
+      : null;
+    if (sourceCommentLabel && sourceComment) {
+      article.append(createElement("span", "comment-label", sourceCommentLabel.textContent));
+      article.append(createElement("p", "", sourceComment.textContent));
+    }
+
+    const detailMeta = sourceMeta[sourceMeta.length - 1];
+    if (detailMeta && detailMeta !== sourceMeta[0]) {
+      article.append(createElement("div", "review-meta", detailMeta.textContent));
+    }
+
+    return article;
   };
 
   Element.prototype.insertAdjacentHTML = function insertAdjacentHTML(position, html) {
@@ -48,9 +63,11 @@
       return nativeInsertAdjacentHTML.call(this, position, html);
     }
 
-    const template = document.createElement("template");
-    template.innerHTML = String(html);
-    sanitizeChildren(template.content);
-    this.append(template.content);
+    const safeReviewItem = buildSafeReviewItem(html);
+    if (safeReviewItem) {
+      this.append(safeReviewItem);
+    } else {
+      this.append(document.createTextNode(String(html)));
+    }
   };
 })();
