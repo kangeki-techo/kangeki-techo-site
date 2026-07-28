@@ -169,3 +169,25 @@ function todayDateValue(date = new Date()) {
     });
   });
 })();
+
+(() => {
+  const comment = document.querySelector("#postComment");
+  const commentRule = document.querySelector("#commentRule");
+  if (!comment || !commentRule) return;
+
+  const updateCommentRequirementSafely = () => {
+    const ratingValues = ["#postVisibility", "#postSound", "#postRecommendation"]
+      .map((selector) => document.querySelector(selector)?.value.trim() || "")
+      .filter((value) => value !== "")
+      .map(Number);
+    const needsComment = ratingValues.some((value) => value <= 2);
+
+    comment.required = needsComment;
+    commentRule.textContent = needsComment
+      ? "星2以下の評価があるため、コメント入力が必須です。"
+      : "コメントは任意です。星2以下の評価を付ける場合のみ必須になります。";
+  };
+
+  window.updateCommentRequirement = updateCommentRequirementSafely;
+  updateCommentRequirementSafely();
+})();
