@@ -97,53 +97,6 @@ function todayDateValue(date = new Date()) {
 })();
 
 (() => {
-  const hasUsableUrl = (link) => {
-    const href = link?.getAttribute("href")?.trim() || "";
-    const normalized = href.toLowerCase();
-    return Boolean(
-      href &&
-      href !== "#" &&
-      normalized !== "undefined" &&
-      normalized !== "null" &&
-      !normalized.startsWith("javascript:")
-    );
-  };
-
-  const preserveExternalLinkSafety = (link) => {
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-  };
-
-  const detailLinks = [
-    document.querySelector("#detailOfficialUrl"),
-    document.querySelector("#detailSeatMapUrl")
-  ].filter(Boolean);
-
-  detailLinks.forEach((link) => {
-    const updateDetailLink = () => {
-      const hasUrl = hasUsableUrl(link);
-      const description = link.closest("dd");
-      const label = description?.previousElementSibling;
-
-      if (description) description.hidden = !hasUrl;
-      if (label?.tagName === "DT") label.hidden = !hasUrl;
-      if (hasUrl) preserveExternalLinkSafety(link);
-    };
-
-    updateDetailLink();
-
-    const observer = new MutationObserver(updateDetailLink);
-    observer.observe(link, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-      attributes: true,
-      attributeFilter: ["href", "aria-disabled"]
-    });
-  });
-})();
-
-(() => {
   const comment = document.querySelector("#postComment");
   const commentRule = document.querySelector("#commentRule");
   if (!comment || !commentRule) return;
