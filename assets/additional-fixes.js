@@ -64,6 +64,36 @@
   });
 })();
 
+(() => {
+  const heroName = document.querySelector("#theaterHeroName");
+  const detailName = document.querySelector("#detailName");
+  if (!heroName || !detailName) return;
+
+  const updateHeroName = () => {
+    const theaterName = detailName.textContent.trim();
+    if (!theaterName || theaterName === "劇場情報が未登録です") return;
+    if (heroName.textContent.trim() !== theaterName) {
+      heroName.textContent = theaterName;
+    }
+  };
+
+  updateHeroName();
+
+  const detailObserver = new MutationObserver(updateHeroName);
+  detailObserver.observe(detailName, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+
+  const heroObserver = new MutationObserver(updateHeroName);
+  heroObserver.observe(heroName, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+})();
+
 function todayDateValue(date = new Date()) {
   const parts = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
@@ -99,10 +129,11 @@ function todayDateValue(date = new Date()) {
 (() => {
   const comment = document.querySelector("#postComment");
   const commentRule = document.querySelector("#commentRule");
+  const ratingSelectors = ["#postVisibility", "#postSound", "#postRecommendation"];
   if (!comment || !commentRule) return;
 
   const updateCommentRequirementSafely = () => {
-    const ratingValues = ["#postVisibility", "#postSound", "#postRecommendation"]
+    const ratingValues = ratingSelectors
       .map((selector) => document.querySelector(selector)?.value.trim() || "")
       .filter((value) => value !== "")
       .map(Number);
@@ -115,5 +146,8 @@ function todayDateValue(date = new Date()) {
   };
 
   window.updateCommentRequirement = updateCommentRequirementSafely;
+  ratingSelectors.forEach((selector) => {
+    document.querySelector(selector)?.addEventListener("change", updateCommentRequirementSafely);
+  });
   updateCommentRequirementSafely();
 })();
