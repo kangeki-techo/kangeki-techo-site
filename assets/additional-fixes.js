@@ -114,33 +114,6 @@ function todayDateValue(date = new Date()) {
     link.rel = "noopener noreferrer";
   };
 
-  const performanceResults = document.querySelector("#performanceResults");
-  if (performanceResults) {
-    const updatePerformanceLinks = () => {
-      performanceResults.querySelectorAll(".performance-card .card-actions").forEach((actions) => {
-        actions.querySelectorAll("a").forEach((link) => {
-          if (!hasUsableUrl(link)) {
-            link.remove();
-            return;
-          }
-          preserveExternalLinkSafety(link);
-        });
-
-        if (!actions.querySelector("a")) actions.remove();
-      });
-    };
-
-    updatePerformanceLinks();
-
-    const observer = new MutationObserver(updatePerformanceLinks);
-    observer.observe(performanceResults, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["href"]
-    });
-  }
-
   const detailLinks = [
     document.querySelector("#detailOfficialUrl"),
     document.querySelector("#detailSeatMapUrl")
