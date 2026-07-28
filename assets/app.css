@@ -936,7 +936,8 @@
       display: flex;
       align-items: baseline;
       justify-content: space-between;
-      gap: 14px;
+      gap: 8px 14px;
+      flex-wrap: wrap;
       align-self: end;
     }
 
@@ -945,6 +946,7 @@
       font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
       font-size: 0.95rem;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .theater-card-link {
@@ -952,6 +954,7 @@
       font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
       font-size: 0.95rem;
       font-weight: 700;
+      white-space: nowrap;
       text-decoration: underline;
       text-decoration-color: transparent;
       text-underline-offset: 4px;
