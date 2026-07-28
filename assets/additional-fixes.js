@@ -20,3 +20,25 @@
     attributeFilter: ["aria-disabled", "href"]
   });
 })();
+
+(() => {
+  const reviewList = document.querySelector("#reviewList");
+  if (!reviewList) return;
+
+  const updateRecommendationLabels = () => {
+    reviewList.querySelectorAll(".rating-row .pill").forEach((pill) => {
+      const labelNode = pill.firstChild;
+      if (labelNode?.nodeType === Node.TEXT_NODE && labelNode.nodeValue.trim() === "おすすめ") {
+        labelNode.nodeValue = "おすすめ度 ";
+      }
+    });
+  };
+
+  updateRecommendationLabels();
+
+  const observer = new MutationObserver(updateRecommendationLabels);
+  observer.observe(reviewList, {
+    childList: true,
+    subtree: true
+  });
+})();
