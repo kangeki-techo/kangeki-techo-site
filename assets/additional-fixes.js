@@ -63,3 +63,35 @@
     subtree: true
   });
 })();
+
+function todayDateValue(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+(() => {
+  const reviewForm = document.querySelector("#reviewForm");
+  if (!reviewForm) return;
+
+  document.addEventListener("submit", (event) => {
+    if (event.target !== reviewForm) return;
+
+    const NativeDate = window.Date;
+    window.Date = class extends NativeDate {
+      toISOString() {
+        const originalIso = super.toISOString();
+        return `${todayDateValue(this)}${originalIso.slice(10)}`;
+      }
+    };
+
+    queueMicrotask(() => {
+      window.Date = NativeDate;
+    });
+  }, true);
+})();
