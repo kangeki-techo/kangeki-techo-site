@@ -42,3 +42,24 @@
     subtree: true
   });
 })();
+
+(() => {
+  const stats = document.querySelector("#stats");
+  if (!stats) return;
+
+  const updateAverageLabels = () => {
+    stats.querySelectorAll(".stat small").forEach((label) => {
+      const text = label.textContent.trim();
+      if (text === "見え方平均") label.textContent = "見え方の平均";
+      if (text === "音響平均") label.textContent = "音響の平均";
+    });
+  };
+
+  updateAverageLabels();
+
+  const observer = new MutationObserver(updateAverageLabels);
+  observer.observe(stats, {
+    childList: true,
+    subtree: true
+  });
+})();
