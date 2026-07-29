@@ -65,6 +65,25 @@
 })();
 
 (() => {
+  if (typeof applyRemoteData !== "function" || typeof baseTheaters === "undefined") return;
+
+  const originalApplyRemoteData = applyRemoteData;
+  applyRemoteData = (data) => {
+    const remoteData = data && typeof data === "object" ? { ...data } : data;
+    if (remoteData && typeof remoteData === "object") {
+      delete remoteData.theaters;
+    }
+
+    originalApplyRemoteData(remoteData);
+    theaters = [...baseTheaters];
+  };
+
+  theaters = [...baseTheaters];
+  renderTheaters();
+  renderDetail();
+})();
+
+(() => {
   const heroName = document.querySelector("#theaterHeroName");
   const detailName = document.querySelector("#detailName");
   if (!heroName || !detailName) return;
