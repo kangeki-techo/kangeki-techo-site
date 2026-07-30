@@ -52,3 +52,37 @@
     });
   });
 })();
+
+(() => {
+  document.addEventListener("click", (event) => {
+    if (typeof window.gtag !== "function") return;
+
+    const performanceOfficialLink = event.target.closest(".performance-card .card-actions a.btn.subtle");
+    if (performanceOfficialLink) {
+      const performanceCard = performanceOfficialLink.closest(".performance-card");
+      window.gtag("event", "performance_official_click", {
+        performance_title: performanceCard?.querySelector("h3")?.textContent.trim() || "",
+        theater_name: performanceCard?.querySelector(".theater-link")?.textContent.trim() || "",
+        official_url: performanceOfficialLink.href
+      });
+      return;
+    }
+
+    const theaterOfficialLink = event.target.closest("#detailOfficialUrl");
+    if (theaterOfficialLink && theaterOfficialLink.getAttribute("aria-disabled") !== "true") {
+      window.gtag("event", "theater_official_click", {
+        theater_name: document.querySelector("#detailName")?.textContent.trim() || "",
+        official_url: theaterOfficialLink.href
+      });
+      return;
+    }
+
+    const seatMapLink = event.target.closest("#detailSeatMapUrl");
+    if (seatMapLink && seatMapLink.getAttribute("aria-disabled") !== "true") {
+      window.gtag("event", "seat_map_click", {
+        theater_name: document.querySelector("#detailName")?.textContent.trim() || "",
+        seat_map_url: seatMapLink.href
+      });
+    }
+  });
+})();
