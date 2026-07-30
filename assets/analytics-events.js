@@ -38,3 +38,17 @@
     return result;
   };
 })();
+
+(() => {
+  document.addEventListener("click", (event) => {
+    const ticketLink = event.target.closest(".performance-card .card-actions a.btn.gold");
+    if (!ticketLink || typeof window.gtag !== "function") return;
+
+    const performanceCard = ticketLink.closest(".performance-card");
+    window.gtag("event", "ticket_click", {
+      performance_title: performanceCard?.querySelector("h3")?.textContent.trim() || "",
+      theater_name: performanceCard?.querySelector(".theater-link")?.textContent.trim() || "",
+      ticket_url: ticketLink.href
+    });
+  });
+})();
