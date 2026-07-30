@@ -86,3 +86,36 @@
     }
   });
 })();
+
+(() => {
+  const detailName = document.querySelector("#detailName");
+  if (!detailName) return;
+
+  let trackedTheaterName = "";
+  const trackTheaterView = () => {
+    const theaterName = detailName.textContent.trim();
+    if (
+      !theaterName
+      || theaterName === "劇場情報が未登録です"
+      || theaterName === trackedTheaterName
+      || typeof window.gtag !== "function"
+    ) {
+      return;
+    }
+
+    trackedTheaterName = theaterName;
+    window.gtag("event", "theater_view", {
+      theater_name: theaterName,
+      page_location: window.location.href
+    });
+  };
+
+  trackTheaterView();
+
+  const observer = new MutationObserver(trackTheaterView);
+  observer.observe(detailName, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+})();
