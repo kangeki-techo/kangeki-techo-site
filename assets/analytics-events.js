@@ -26,13 +26,21 @@
   window.sendToSheet = async (payload) => {
     const result = await originalSendToSheet(payload);
 
-    if (payload?.type === "seat_review" && typeof window.gtag === "function") {
-      window.gtag("event", "review_submit_success", {
-        theater_name: payload.theater || "",
-        seat_floor: payload.floor || "",
-        seat_row: payload.row || "",
-        seat_number: payload.seat || ""
-      });
+    if (typeof window.gtag === "function") {
+      if (payload?.type === "seat_review") {
+        window.gtag("event", "review_submit_success", {
+          theater_name: payload.theater || "",
+          seat_floor: payload.floor || "",
+          seat_row: payload.row || "",
+          seat_number: payload.seat || ""
+        });
+      }
+
+      if (payload?.type === "contact") {
+        window.gtag("event", "contact_submit_success", {
+          has_reply_email: Boolean(payload.email)
+        });
+      }
     }
 
     return result;
