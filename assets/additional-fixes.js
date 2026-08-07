@@ -72,6 +72,16 @@
     const remoteData = data && typeof data === "object" ? { ...data } : data;
     if (remoteData && typeof remoteData === "object") {
       delete remoteData.theaters;
+
+      if (
+        typeof selectedTheater !== "undefined" &&
+        typeof isOtherTheaterName === "function" &&
+        isOtherTheaterName(selectedTheater) &&
+        Array.isArray(remoteData.seat_reviews) &&
+        remoteData.seat_reviews.length === 0
+      ) {
+        delete remoteData.seat_reviews;
+      }
     }
 
     originalApplyRemoteData(remoteData);
@@ -169,4 +179,56 @@ function todayDateValue(date = new Date()) {
     document.querySelector(selector)?.addEventListener("change", updateCommentRequirementSafely);
   });
   updateCommentRequirementSafely();
+})();
+
+(() => {
+  if (
+    typeof getRemoteParams !== "function" ||
+    typeof loadRemoteData !== "function" ||
+    typeof isOtherTheaterName !== "function"
+  ) return;
+
+  const originalGetRemoteParams = getRemoteParams;
+  getRemoteParams = () => {
+    const params = originalGetRemoteParams();
+    if (params?.view === "theater" && isOtherTheaterName(params.theater)) {
+      return { ...params, theater: "" };
+    }
+    return params;
+  };
+
+  const requestedTheater = new URLSearchParams(window.location.search).get("theater") || "";
+  if (!isOtherTheaterName(requestedTheater)) return;
+
+  loadRemoteData({ view: "theater" }).then((loaded) => {
+    if (!loaded && typeof loadDataCache === "function") {
+      loadDataCache({ view: "theater" });
+    }
+    if (typeof renderDetail === "function") renderDetail();
+  });
+})();
+
+(() => {
+  if (typeof renderReviewList !== "function" || typeof isOtherTheaterName !== "function") return;
+
+  const originalRenderReviewList = renderReviewList;
+  renderReviewList = (visibleReviews, emptyMessage) => {
+    originalRenderReviewList(visibleReviews, emptyMessage);
+
+    if (typeof selectedTheater === "undefined" || !isOtherTheaterName(selectedTheater)) return;
+
+    const reviewItems = document.querySelectorAll("#reviewList .review-item");
+    const displayedReviews = visibleReviews.slice(0, visibleReviewCount);
+
+    reviewItems.forEach((item, index) => {
+      const review = displayedReviews[index];
+      const reviewHead = item.querySelector(".review-head > div");
+      if (!review || !reviewHead || reviewHead.querySelector(".other-theater-name")) return;
+
+      const theaterName = document.createElement("div");
+      theaterName.className = "review-meta other-theater-name";
+      theaterName.textContent = `劇場：${review.theater}`;
+      reviewHead.prepend(theaterName);
+    });
+  };
 })();
