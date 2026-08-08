@@ -72,16 +72,6 @@
     const remoteData = data && typeof data === "object" ? { ...data } : data;
     if (remoteData && typeof remoteData === "object") {
       delete remoteData.theaters;
-
-      if (
-        typeof selectedTheater !== "undefined" &&
-        typeof isOtherTheaterName === "function" &&
-        isOtherTheaterName(selectedTheater) &&
-        Array.isArray(remoteData.seat_reviews) &&
-        remoteData.seat_reviews.length === 0
-      ) {
-        delete remoteData.seat_reviews;
-      }
     }
 
     originalApplyRemoteData(remoteData);
@@ -179,33 +169,6 @@ function todayDateValue(date = new Date()) {
     document.querySelector(selector)?.addEventListener("change", updateCommentRequirementSafely);
   });
   updateCommentRequirementSafely();
-})();
-
-(() => {
-  if (
-    typeof getRemoteParams !== "function" ||
-    typeof loadRemoteData !== "function" ||
-    typeof isOtherTheaterName !== "function"
-  ) return;
-
-  const originalGetRemoteParams = getRemoteParams;
-  getRemoteParams = () => {
-    const params = originalGetRemoteParams();
-    if (params?.view === "theater" && isOtherTheaterName(params.theater)) {
-      return { ...params, theater: "" };
-    }
-    return params;
-  };
-
-  const requestedTheater = new URLSearchParams(window.location.search).get("theater") || "";
-  if (!isOtherTheaterName(requestedTheater)) return;
-
-  loadRemoteData({ view: "theater" }).then((loaded) => {
-    if (!loaded && typeof loadDataCache === "function") {
-      loadDataCache({ view: "theater" });
-    }
-    if (typeof renderDetail === "function") renderDetail();
-  });
 })();
 
 (() => {
